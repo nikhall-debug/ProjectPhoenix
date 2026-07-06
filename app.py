@@ -1,13 +1,14 @@
-from config import (
-    WITHINGS_CLIENT_ID,
-    WITHINGS_CLIENT_SECRET,
-    WITHINGS_REDIRECT_URI,
+from integrations.withings import (
+    build_authorization_url,
+    exchange_code_for_tokens,
+    save_tokens,
+    get_latest_weight,
 )
 from datetime import date
 import streamlit as st
 from database import init_db, save_checkin, load_checkins
 from coach import daily_brief
-from integrations.withings import build_authorization_url
+from integrations.withings import build_authorization_url, exchange_code_for_tokens
 
 init_db()
 
@@ -15,24 +16,33 @@ query_params = st.query_params
 
 withings_code = query_params.get("code", None)
 withings_state = query_params.get("state", None)
-st.write("Debug query params:", dict(query_params))
 
 st.set_page_config(page_title="Project Phoenix", page_icon="🔥", layout="wide")
 
 st.title("🔥 Project Phoenix")
+st.subheader("Your Personal Health Intelligence")
+st.caption("30 seconds now. Better decisions all day.")
+
 st.divider()
+
 st.header("🔗 Withings Connection Test")
 
 withings_url = build_authorization_url()
 st.link_button("Connect Withings", withings_url)
+
 if withings_code:
     st.success("✅ Withings returned an authorization code.")
+
+    if st.button("Exchange code for tokens"):
+        token_response = exchange_code_for_tokens(withings_code)
+        save_tokens(token_response)
+        st.success("✅ Withings tokens saved locally.")
+
     st.write("State:", withings_state)
-    st.caption("Next step: exchange this code for access tokens.")
+    st.caption("Next step: use the saved tokens to fetch weight.")
+
 else:
     st.info("Withings is not connected yet.")
-st.subheader("Your Personal Health Intelligence")
-st.caption("30 seconds now. Better decisions all day.")
 
 st.divider()
 
@@ -117,6 +127,12 @@ if not df.empty:
     st.dataframe(df, use_container_width=True)
 else:
     st.caption("No check-ins saved yet.")
+
+    from integrations.withings import get_latest_weight
+
+if st.button("Download latest Withings weight"):
+    weight = get_latest_weight()
+    st.metric("Latest Withings weight", f"{weight:.1f} kg")
 
 
 st.caption("Version 0.4-alpha with local database")
