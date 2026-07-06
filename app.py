@@ -17,6 +17,8 @@ def init_db():
             checkin_date TEXT NOT NULL,
             timestamp TEXT NOT NULL,
             lumen_score INTEGER,
+            fat_burn_percentage INTEGER,
+            carb_burn_percentage INTEGER,
             energy INTEGER,
             mood INTEGER,
             soreness INTEGER,
@@ -27,17 +29,19 @@ def init_db():
     conn.close()
 
 
-def save_checkin(checkin_date, lumen_score, energy, mood, soreness, notes):
+def save_checkin(checkin_date, lumen_score, fat_burn_percentage, carb_burn_percentage, energy, mood, soreness, notes):
     conn = sqlite3.connect(DB_FILE)
     cur = conn.cursor()
     cur.execute("""
         INSERT INTO daily_checkins
-        (checkin_date, timestamp, lumen_score, energy, mood, soreness, notes)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
+        (checkin_date, timestamp, lumen_score, fat_burn_percent, carb_burn_percent, energy, mood, soreness, notes)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
     """, (
         str(checkin_date),
         datetime.now().isoformat(timespec="seconds"),
         lumen_score,
+        fat_burn_percentage,
+        carb_burn_percentage,
         energy,
         mood,
         soreness,
@@ -73,6 +77,16 @@ col1, col2, col3 = st.columns(3)
 with col1:
     checkin_date = st.date_input("Date", date.today())
     lumen_score = st.selectbox("Morning Lumen score", [1, 2, 3, 4, 5], index=2)
+    fat_burn_percent = st.slider(
+    "Fat burning %",
+    min_value=0,
+    max_value=100,
+    value=65,
+    help="Carbs are calculated automatically.")
+
+carb_burn_percent = 100 - fat_burn_percent
+
+st.caption(f"Estimated fuel mix: {fat_burn_percent}% fat / {carb_burn_percent}% carbs")
 
 with col2:
     energy = st.slider("Energy", 1, 10, 5)
@@ -83,7 +97,7 @@ with col3:
     notes = st.text_area("Notes", placeholder="Optional...")
 
 if st.button("Save check-in"):
-    save_checkin(checkin_date, lumen_score, energy, mood, soreness, notes)
+    save_checkin(checkin_date, lumen_score, fat_burn_percent, carb_burn_percent, energy, mood, soreness, notes)
     st.success("Check-in saved to Phoenix database 🔥")
 
 st.divider()
