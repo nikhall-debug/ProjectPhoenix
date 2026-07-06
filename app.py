@@ -1,77 +1,43 @@
-import sqlite3
-from datetime import date, datetime
-
-import pandas as pd
+from config import (
+    WITHINGS_CLIENT_ID,
+    WITHINGS_CLIENT_SECRET,
+    WITHINGS_REDIRECT_URI,
+)
+from datetime import date
 import streamlit as st
-
-
-DB_FILE = "phoenix.db"
-
-
-def init_db():
-    conn = sqlite3.connect(DB_FILE)
-    cur = conn.cursor()
-    cur.execute("""
-        CREATE TABLE IF NOT EXISTS daily_checkins (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            checkin_date TEXT NOT NULL,
-            timestamp TEXT NOT NULL,
-            lumen_score INTEGER,
-            fat_burn_percent INTEGER,
-            carb_burn_percent INTEGER,
-            energy INTEGER,
-            mood INTEGER,
-            soreness INTEGER,
-            notes TEXT
-        )
-    """)
-    conn.commit()
-    conn.close()
-
-
-def save_checkin(checkin_date, lumen_score, fat_burn_percentage, carb_burn_percentage, energy, mood, soreness, notes):
-    conn = sqlite3.connect(DB_FILE)
-    cur = conn.cursor()
-    cur.execute("""
-        INSERT INTO daily_checkins
-        (checkin_date, timestamp, lumen_score, fat_burn_percent, carb_burn_percent, energy, mood, soreness, notes)
-VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-    """, (
-        str(checkin_date),
-        datetime.now().isoformat(timespec="seconds"),
-        lumen_score,
-        fat_burn_percentage,
-        carb_burn_percentage,
-        energy,
-        mood,
-        soreness,
-        notes,
-    ))
-    conn.commit()
-    conn.close()
-
-
-def load_checkins():
-    conn = sqlite3.connect(DB_FILE)
-    df = pd.read_sql_query(
-        "SELECT * FROM daily_checkins ORDER BY checkin_date DESC, timestamp DESC",
-        conn
-    )
-    conn.close()
-    return df
-
+from database import init_db, save_checkin, load_checkins
+from coach import daily_brief
+from integrations.withings import build_authorization_url
 
 init_db()
+
+query_params = st.query_params
+
+withings_code = query_params.get("code", None)
+withings_state = query_params.get("state", None)
+st.write("Debug query params:", dict(query_params))
 
 st.set_page_config(page_title="Project Phoenix", page_icon="🔥", layout="wide")
 
 st.title("🔥 Project Phoenix")
+st.divider()
+st.header("🔗 Withings Connection Test")
+
+withings_url = build_authorization_url()
+st.link_button("Connect Withings", withings_url)
+if withings_code:
+    st.success("✅ Withings returned an authorization code.")
+    st.write("State:", withings_state)
+    st.caption("Next step: exchange this code for access tokens.")
+else:
+    st.info("Withings is not connected yet.")
 st.subheader("Your Personal Health Intelligence")
 st.caption("30 seconds now. Better decisions all day.")
 
 st.divider()
 
 st.header("🌅 Morning Check-in")
+st.caption("Tell Phoenix what only you know. Keep it under 30 seconds.")
 
 col1, col2, col3 = st.columns(3)
 
@@ -79,7 +45,7 @@ with col1:
     checkin_date = st.date_input("Date", date.today())
     lumen_score = st.selectbox("Morning Lumen score", [1, 2, 3, 4, 5], index=2)
     fat_burn_percent = st.slider(
-    "Fat burning %",
+    "Estimated Fat burning %",
     min_value=0,
     max_value=100,
     value=65,
@@ -97,7 +63,7 @@ with col2:
     5
 )
     mood = st.slider(
-    "😊 Mood (1 = Poor, 10 = Excellent)",
+    "😊 Mood & Motivation (1 = Poor, 10 = Excellent)",
     1,
     10,
     5
@@ -105,7 +71,7 @@ with col2:
 
 with col3:
     soreness = st.slider(
-    "💪 Pain / Soreness (1 = None, 10 = Severe)",
+    "💪 Pain or Muscle Soreness (1 = None, 10 = Severe)",
     1,
     10,
     1
@@ -114,8 +80,21 @@ with col3:
 
 if st.button("💾 Complete Morning Check-in"):
     save_checkin(checkin_date, lumen_score, fat_burn_percent, carb_burn_percent, energy, mood, soreness, notes)
-    st.success("✅ Morning check-in complete. Phoenix is analysing your day...")
+brief = daily_brief(energy, soreness, fat_burn_percent)
 
+st.success("✅ Morning check-in complete!")
+
+st.divider()
+
+st.header("🔥 Today's Phoenix Brief")
+
+st.subheader(brief["recovery"])
+
+st.markdown(f"### 🚴 Today's Recommendation")
+st.write(brief["recommendation"])
+
+st.markdown("### Why?")
+st.write(brief["reason"])
 st.divider()
 
 st.header("Phoenix Daily Brief")
@@ -130,6 +109,7 @@ else:
 st.divider()
 
 st.header("Recent check-ins")
+st.caption("Temporary history view while Phoenix is still under development.")
 
 df = load_checkins()
 
@@ -137,5 +117,6 @@ if not df.empty:
     st.dataframe(df, use_container_width=True)
 else:
     st.caption("No check-ins saved yet.")
+
 
 st.caption("Version 0.4-alpha with local database")
