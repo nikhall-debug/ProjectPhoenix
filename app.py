@@ -17,8 +17,8 @@ def init_db():
             checkin_date TEXT NOT NULL,
             timestamp TEXT NOT NULL,
             lumen_score INTEGER,
-            fat_burn_percentage INTEGER,
-            carb_burn_percentage INTEGER,
+            fat_burn_percent INTEGER,
+            carb_burn_percent INTEGER,
             energy INTEGER,
             mood INTEGER,
             soreness INTEGER,
@@ -66,11 +66,12 @@ init_db()
 st.set_page_config(page_title="Project Phoenix", page_icon="🔥", layout="wide")
 
 st.title("🔥 Project Phoenix")
-st.subheader("Personal Health & Performance Intelligence")
+st.subheader("Your Personal Health Intelligence")
+st.caption("30 seconds now. Better decisions all day.")
 
 st.divider()
 
-st.header("30-second daily check-in")
+st.header("🌅 Morning Check-in")
 
 col1, col2, col3 = st.columns(3)
 
@@ -89,16 +90,31 @@ carb_burn_percent = 100 - fat_burn_percent
 st.caption(f"Estimated fuel mix: {fat_burn_percent}% fat / {carb_burn_percent}% carbs")
 
 with col2:
-    energy = st.slider("Energy", 1, 10, 5)
-    mood = st.slider("Mood / motivation", 1, 10, 5)
+    energy = st.slider(
+    "⚡ Energy (1 = Exhausted, 10 = Fantastic)",
+    1,
+    10,
+    5
+)
+    mood = st.slider(
+    "😊 Mood (1 = Poor, 10 = Excellent)",
+    1,
+    10,
+    5
+)
 
 with col3:
-    soreness = st.slider("Soreness / pain", 1, 10, 3)
+    soreness = st.slider(
+    "💪 Pain / Soreness (1 = None, 10 = Severe)",
+    1,
+    10,
+    1
+)
     notes = st.text_area("Notes", placeholder="Optional...")
 
-if st.button("Save check-in"):
+if st.button("💾 Complete Morning Check-in"):
     save_checkin(checkin_date, lumen_score, fat_burn_percent, carb_burn_percent, energy, mood, soreness, notes)
-    st.success("Check-in saved to Phoenix database 🔥")
+    st.success("✅ Morning check-in complete. Phoenix is analysing your day...")
 
 st.divider()
 
