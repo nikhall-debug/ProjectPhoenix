@@ -1,5 +1,16 @@
+# Virtual environment
 .venv/
+
+# Python cache
 __pycache__/
 *.pyc
+
+# Secrets
 .env
 withings_tokens.json
+
+# Local database
+phoenix.db
+
+# macOS
+.DS_Store
