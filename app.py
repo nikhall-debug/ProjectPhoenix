@@ -2,15 +2,15 @@ from datetime import date, datetime
 
 import streamlit as st
 
+from analytics import weight_summary, body_fat_summary, muscle_summary, pwv_summary
 from coach import daily_brief
 from database import (
     init_db,
     save_checkin,
-    load_checkins,
     save_health_measurement,
-    load_health_measurements,
     get_latest_measurement_time,
     get_latest_metric,
+    has_checkin_for_date,
 )
 from integrations.withings import (
     build_authorization_url,
@@ -32,10 +32,6 @@ st.title("🔥 Project Phoenix")
 st.subheader("Your Personal Health Intelligence")
 st.caption("30 seconds now. Better decisions all day.")
 
-st.divider()
-
-st.header("🔗 Withings")
-
 if withings_code:
     token_response = exchange_code_for_tokens(withings_code)
     save_tokens(token_response)
@@ -43,11 +39,7 @@ if withings_code:
     st.success("✅ Withings connected. Tokens saved locally.")
     st.query_params.clear()
 
-if not withings_is_connected():
-    st.warning("Withings is not connected yet.")
-    st.link_button("Connect Withings", build_authorization_url())
-
-else:
+if withings_is_connected():
     if "withings_synced_this_session" not in st.session_state:
         st.session_state["withings_synced_this_session"] = False
 
@@ -60,11 +52,8 @@ else:
 
         measurements = get_withings_measurements(limit=100, startdate=startdate)
 
-        new_count = 0
-        duplicate_count = 0
-
         for measurement in measurements:
-            inserted = save_health_measurement(
+            save_health_measurement(
                 source=measurement["source"],
                 metric_type=measurement["metric_type"],
                 value=measurement["value"],
@@ -74,26 +63,75 @@ else:
                 raw_data=measurement["raw_data"],
             )
 
-            if inserted:
-                new_count += 1
-            else:
-                duplicate_count += 1
-
         st.session_state["withings_synced_this_session"] = True
-        st.session_state["withings_new_count"] = new_count
-        st.session_state["withings_duplicate_count"] = duplicate_count
 
-    new_count = st.session_state.get("withings_new_count", 0)
 
-    if new_count > 0:
-        st.success(f"✅ Withings imported {new_count} new measurements.")
+st.divider()
+
+st.header("🌅 Morning Snapshot")
+
+today_checkin_done = has_checkin_for_date(date.today())
+
+weight = weight_summary()
+body_fat = body_fat_summary()
+muscle = muscle_summary()
+pwv = pwv_summary()
+
+body_measurements_available = weight is not None
+
+# Temporary: later this will check the latest check-in record directly.
+lumen_entered = today_checkin_done
+
+completed = 0
+total = 3
+
+if body_measurements_available:
+    completed += 1
+
+if today_checkin_done:
+    completed += 1
+
+if lumen_entered:
+    completed += 1
+
+snapshot_percent = round((completed / total) * 100)
+
+if completed == total:
+    st.success(
+        "Good morning Nik. Your Morning Snapshot is complete. "
+        "Phoenix has enough information to provide today's recommendations."
+    )
+else:
+    st.warning(
+        f"Good morning Nik. Your Morning Snapshot is {snapshot_percent}% complete. "
+        "Complete the missing items to improve today's coaching."
+    )
+
+snapshot_col1, snapshot_col2 = st.columns([3, 1])
+
+with snapshot_col1:
+    if body_measurements_available:
+        st.success("☑ Body measurements")
     else:
-        st.info("✅ Withings is up to date.")
+        st.warning("☐ Body measurements")
 
-    latest_weight = get_latest_metric("withings", "weight_kg")
+    if today_checkin_done:
+        st.success("☑ Morning check-in")
+    else:
+        st.warning("☐ Morning check-in")
 
-    if latest_weight is not None:
-        st.metric("Latest Withings weight", f"{latest_weight['value']:.1f} kg")
+    if lumen_entered:
+        st.success("☑ Lumen")
+    else:
+        st.info("☐ Lumen")
+
+with snapshot_col2:
+    st.metric("Snapshot", f"{snapshot_percent}%")
+
+if not withings_is_connected():
+    st.warning("Withings is not connected.")
+    st.link_button("Connect Withings", build_authorization_url())
+
 
 st.divider()
 
@@ -152,6 +190,7 @@ if st.button("💾 Complete Morning Check-in"):
         notes,
     )
     st.success("✅ Morning check-in complete!")
+    st.rerun()
 
 brief = daily_brief(energy, soreness, fat_burn_percent)
 
@@ -167,24 +206,98 @@ st.write(brief["recommendation"])
 st.markdown("### Why?")
 st.write(brief["reason"])
 
-st.divider()
-
-st.header("Recent check-ins")
-df = load_checkins()
-
-if not df.empty:
-    st.dataframe(df, use_container_width=True)
-else:
-    st.caption("No check-ins saved yet.")
 
 st.divider()
 
-st.header("Recent health measurements")
-measurements_df = load_health_measurements()
+st.header("📊 Dashboard")
 
-if not measurements_df.empty:
-    st.dataframe(measurements_df, use_container_width=True)
-else:
-    st.caption("No health measurements imported yet.")
+latest_systolic = get_latest_metric("withings", "systolic_bp")
+latest_diastolic = get_latest_metric("withings", "diastolic_bp")
 
-st.caption("Version 0.5-alpha with session-based automatic Withings sync")
+latest_lumen = "—"
+latest_fat_burn = "—"
+latest_carb_burn = "—"
+
+
+def format_delta(value, unit):
+    if value is None:
+        return None
+
+    sign = "+" if value > 0 else ""
+    return f"{sign}{value:.1f} {unit} in 30d"
+
+
+st.subheader("⚖️ Body")
+
+body_col1, body_col2, body_col3 = st.columns(3)
+
+with body_col1:
+    if weight:
+        st.metric(
+            "Weight",
+            f"{weight['current']:.1f} kg",
+            delta=format_delta(weight["delta_30d"], "kg"),
+        )
+    else:
+        st.metric("Weight", "—")
+
+with body_col2:
+    if body_fat:
+        st.metric(
+            "Body Fat",
+            f"{body_fat['current']:.1f} %",
+            delta=format_delta(body_fat["delta_30d"], "%"),
+        )
+    else:
+        st.metric("Body Fat", "—")
+
+with body_col3:
+    if muscle:
+        st.metric(
+            "Muscle Mass",
+            f"{muscle['current']:.1f} kg",
+            delta=format_delta(muscle["delta_30d"], "kg"),
+        )
+    else:
+        st.metric("Muscle Mass", "—")
+
+
+st.subheader("❤️ Cardiovascular")
+
+cardio_col1, cardio_col2 = st.columns(2)
+
+with cardio_col1:
+    if latest_systolic and latest_diastolic:
+        st.metric(
+            "Blood Pressure",
+            f"{latest_systolic['value']:.0f}/{latest_diastolic['value']:.0f} mmHg",
+        )
+    else:
+        st.metric("Blood Pressure", "—")
+
+with cardio_col2:
+    if pwv:
+        st.metric(
+            "Pulse Wave Velocity",
+            f"{pwv['current']:.2f} m/s",
+            delta=format_delta(pwv["delta_30d"], "m/s"),
+        )
+    else:
+        st.metric("Pulse Wave Velocity", "—")
+
+
+st.subheader("🔥 Metabolism")
+
+met_col1, met_col2, met_col3 = st.columns(3)
+
+with met_col1:
+    st.metric("Lumen Score", latest_lumen)
+
+with met_col2:
+    st.metric("Fat Burn", latest_fat_burn)
+
+with met_col3:
+    st.metric("Carb Burn", latest_carb_burn)
+
+
+st.caption("Version 0.5-alpha with Morning Snapshot")

@@ -134,7 +134,22 @@ def get_latest_metric(source, metric_type):
         "measured_at": result[2],
     }
 
+def has_checkin_for_date(checkin_date):
+    conn = sqlite3.connect(DB_FILE)
+    cur = conn.cursor()
 
+    cur.execute("""
+        SELECT COUNT(*)
+        FROM daily_checkins
+        WHERE checkin_date = ?
+    """, (str(checkin_date),))
+
+    count = cur.fetchone()[0]
+
+    conn.close()
+
+    return count > 0
+    
 def load_checkins():
     conn = sqlite3.connect(DB_FILE)
     df = pd.read_sql_query(
