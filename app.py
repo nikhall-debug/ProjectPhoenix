@@ -1,23 +1,32 @@
+from datetime import date, datetime
+
+import streamlit as st
+
+from coach import daily_brief
+from database import (
+    init_db,
+    save_checkin,
+    load_checkins,
+    save_health_measurement,
+    load_health_measurements,
+    get_latest_measurement_time,
+    get_latest_metric,
+)
 from integrations.withings import (
     build_authorization_url,
     exchange_code_for_tokens,
     save_tokens,
-    get_latest_weight,
+    get_withings_measurements,
+    withings_is_connected,
 )
-from datetime import date
-import streamlit as st
-from database import init_db, save_checkin, load_checkins
-from coach import daily_brief
-from integrations.withings import build_authorization_url, exchange_code_for_tokens
+
 
 init_db()
 
-query_params = st.query_params
-
-withings_code = query_params.get("code", None)
-withings_state = query_params.get("state", None)
-
 st.set_page_config(page_title="Project Phoenix", page_icon="🔥", layout="wide")
+
+query_params = st.query_params
+withings_code = query_params.get("code", None)
 
 st.title("🔥 Project Phoenix")
 st.subheader("Your Personal Health Intelligence")
@@ -25,24 +34,66 @@ st.caption("30 seconds now. Better decisions all day.")
 
 st.divider()
 
-st.header("🔗 Withings Connection Test")
-
-withings_url = build_authorization_url()
-st.link_button("Connect Withings", withings_url)
+st.header("🔗 Withings")
 
 if withings_code:
-    st.success("✅ Withings returned an authorization code.")
+    token_response = exchange_code_for_tokens(withings_code)
+    save_tokens(token_response)
+    st.session_state["withings_synced_this_session"] = False
+    st.success("✅ Withings connected. Tokens saved locally.")
+    st.query_params.clear()
 
-    if st.button("Exchange code for tokens"):
-        token_response = exchange_code_for_tokens(withings_code)
-        save_tokens(token_response)
-        st.success("✅ Withings tokens saved locally.")
-
-    st.write("State:", withings_state)
-    st.caption("Next step: use the saved tokens to fetch weight.")
+if not withings_is_connected():
+    st.warning("Withings is not connected yet.")
+    st.link_button("Connect Withings", build_authorization_url())
 
 else:
-    st.info("Withings is not connected yet.")
+    if "withings_synced_this_session" not in st.session_state:
+        st.session_state["withings_synced_this_session"] = False
+
+    if not st.session_state["withings_synced_this_session"]:
+        latest_time = get_latest_measurement_time("withings")
+
+        startdate = None
+        if latest_time is not None:
+            startdate = int(datetime.fromisoformat(latest_time).timestamp())
+
+        measurements = get_withings_measurements(limit=100, startdate=startdate)
+
+        new_count = 0
+        duplicate_count = 0
+
+        for measurement in measurements:
+            inserted = save_health_measurement(
+                source=measurement["source"],
+                metric_type=measurement["metric_type"],
+                value=measurement["value"],
+                unit=measurement["unit"],
+                measured_at=measurement["measured_at"],
+                raw_type=measurement["raw_type"],
+                raw_data=measurement["raw_data"],
+            )
+
+            if inserted:
+                new_count += 1
+            else:
+                duplicate_count += 1
+
+        st.session_state["withings_synced_this_session"] = True
+        st.session_state["withings_new_count"] = new_count
+        st.session_state["withings_duplicate_count"] = duplicate_count
+
+    new_count = st.session_state.get("withings_new_count", 0)
+
+    if new_count > 0:
+        st.success(f"✅ Withings imported {new_count} new measurements.")
+    else:
+        st.info("✅ Withings is up to date.")
+
+    latest_weight = get_latest_metric("withings", "weight_kg")
+
+    if latest_weight is not None:
+        st.metric("Latest Withings weight", f"{latest_weight['value']:.1f} kg")
 
 st.divider()
 
@@ -55,11 +106,12 @@ with col1:
     checkin_date = st.date_input("Date", date.today())
     lumen_score = st.selectbox("Morning Lumen score", [1, 2, 3, 4, 5], index=2)
     fat_burn_percent = st.slider(
-    "Estimated Fat burning %",
-    min_value=0,
-    max_value=100,
-    value=65,
-    help="Carbs are calculated automatically.")
+        "Estimated Fat burning %",
+        min_value=0,
+        max_value=100,
+        value=65,
+        help="Carbs are calculated automatically.",
+    )
 
 carb_burn_percent = 100 - fat_burn_percent
 
@@ -67,32 +119,41 @@ st.caption(f"Estimated fuel mix: {fat_burn_percent}% fat / {carb_burn_percent}% 
 
 with col2:
     energy = st.slider(
-    "⚡ Energy (1 = Exhausted, 10 = Fantastic)",
-    1,
-    10,
-    5
-)
+        "⚡ Energy (1 = Exhausted, 10 = Fantastic)",
+        1,
+        10,
+        5,
+    )
     mood = st.slider(
-    "😊 Mood & Motivation (1 = Poor, 10 = Excellent)",
-    1,
-    10,
-    5
-)
+        "😊 Mood & Motivation (1 = Poor, 10 = Excellent)",
+        1,
+        10,
+        5,
+    )
 
 with col3:
     soreness = st.slider(
-    "💪 Pain or Muscle Soreness (1 = None, 10 = Severe)",
-    1,
-    10,
-    1
-)
+        "💪 Pain or Muscle Soreness (1 = None, 10 = Severe)",
+        1,
+        10,
+        1,
+    )
     notes = st.text_area("Notes", placeholder="Optional...")
 
 if st.button("💾 Complete Morning Check-in"):
-    save_checkin(checkin_date, lumen_score, fat_burn_percent, carb_burn_percent, energy, mood, soreness, notes)
-brief = daily_brief(energy, soreness, fat_burn_percent)
+    save_checkin(
+        checkin_date,
+        lumen_score,
+        fat_burn_percent,
+        carb_burn_percent,
+        energy,
+        mood,
+        soreness,
+        notes,
+    )
+    st.success("✅ Morning check-in complete!")
 
-st.success("✅ Morning check-in complete!")
+brief = daily_brief(energy, soreness, fat_burn_percent)
 
 st.divider()
 
@@ -100,27 +161,15 @@ st.header("🔥 Today's Phoenix Brief")
 
 st.subheader(brief["recovery"])
 
-st.markdown(f"### 🚴 Today's Recommendation")
+st.markdown("### 🚴 Today's Recommendation")
 st.write(brief["recommendation"])
 
 st.markdown("### Why?")
 st.write(brief["reason"])
-st.divider()
-
-st.header("Phoenix Daily Brief")
-
-if energy >= 7 and soreness <= 4:
-    st.success("Today looks like a good low-risk day. Gentle activity is fine.")
-elif soreness >= 7:
-    st.warning("High soreness/pain. Recovery focus today.")
-else:
-    st.info("Steady recovery day. Walk, eat protein, hydrate, sleep.")
 
 st.divider()
 
 st.header("Recent check-ins")
-st.caption("Temporary history view while Phoenix is still under development.")
-
 df = load_checkins()
 
 if not df.empty:
@@ -128,11 +177,14 @@ if not df.empty:
 else:
     st.caption("No check-ins saved yet.")
 
-    from integrations.withings import get_latest_weight
+st.divider()
 
-if st.button("Download latest Withings weight"):
-    weight = get_latest_weight()
-    st.metric("Latest Withings weight", f"{weight:.1f} kg")
+st.header("Recent health measurements")
+measurements_df = load_health_measurements()
 
+if not measurements_df.empty:
+    st.dataframe(measurements_df, use_container_width=True)
+else:
+    st.caption("No health measurements imported yet.")
 
-st.caption("Version 0.4-alpha with local database")
+st.caption("Version 0.5-alpha with session-based automatic Withings sync")
