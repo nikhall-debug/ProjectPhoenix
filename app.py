@@ -1,31 +1,35 @@
-from datetime import date, datetime
+from datetime import date
 
 import streamlit as st
 
+from achievements import generate_achievements
 from coach import daily_brief
 from database import (
     init_db,
     save_checkin,
-    save_health_measurement,
-    get_latest_measurement_time,
     save_coach_feedback,
 )
+from insights import generate_daily_focus, generate_insights
 from integrations.withings import (
     build_authorization_url,
     exchange_code_for_tokens,
     save_tokens,
-    get_withings_measurements,
     withings_is_connected,
     stored_tokens_are_valid,
 )
 from snapshot import build_morning_snapshot
-from insights import generate_insights, generate_daily_focus
-from achievements import generate_achievements
+from sync import sync_withings_once_per_session
+from ui_helpers import format_delta, render_explainable_item
 
 
 init_db()
 
 st.set_page_config(page_title="Project Phoenix", page_icon="🔥", layout="wide")
+
+
+# -------------------------
+# Header
+# -------------------------
 
 query_params = st.query_params
 withings_code = query_params.get("code", None)
@@ -56,34 +60,10 @@ if withings_code:
 
 
 # -------------------------
-# Withings background sync
+# Background sync
 # -------------------------
 
-if stored_tokens_are_valid():
-    if "withings_synced_this_session" not in st.session_state:
-        st.session_state["withings_synced_this_session"] = False
-
-    if not st.session_state["withings_synced_this_session"]:
-        latest_time = get_latest_measurement_time("withings")
-
-        startdate = None
-        if latest_time is not None:
-            startdate = int(datetime.fromisoformat(latest_time).timestamp())
-
-        measurements = get_withings_measurements(limit=100, startdate=startdate)
-
-        for measurement in measurements:
-            save_health_measurement(
-                source=measurement["source"],
-                metric_type=measurement["metric_type"],
-                value=measurement["value"],
-                unit=measurement["unit"],
-                measured_at=measurement["measured_at"],
-                raw_type=measurement["raw_type"],
-                raw_data=measurement["raw_data"],
-            )
-
-        st.session_state["withings_synced_this_session"] = True
+sync_withings_once_per_session(st)
 
 
 # -------------------------
@@ -194,6 +174,7 @@ if st.button("💾 Complete Morning Check-in"):
     st.success("✅ Morning check-in complete!")
     st.rerun()
 
+
 # -------------------------
 # Achievements
 # -------------------------
@@ -205,17 +186,10 @@ st.header("🏆 Achievements")
 
 if achievements:
     for achievement in achievements:
-        st.markdown(f"### {achievement['icon']} {achievement['title']}")
-        st.write(achievement["text"])
-
-        with st.expander("💡 Why?"):
-            st.write(achievement["explanation"])
-
-        with st.expander("📚 Evidence"):
-            for item in achievement.get("evidence", []):
-                st.write(f"- {item}")
+        render_explainable_item(achievement)
 else:
     st.caption("No new achievements today.")
+
 
 # -------------------------
 # Today's Insights
@@ -231,6 +205,7 @@ info_items = [item for item in insights if item.get("level") == "info"]
 st.divider()
 st.header("🌟 Today's Insights")
 st.info(f"Today’s Focus: {daily_focus}")
+
 with st.form("coach_feedback_form"):
     st.markdown("#### Did this feel right?")
 
@@ -259,37 +234,24 @@ with st.form("coach_feedback_form"):
             )
             st.success("Feedback saved.")
 
-
-def render_insight(insight):
-    st.markdown(f"### {insight['icon']} {insight['title']}")
-    st.write(insight["text"])
-    st.info(f"Action: {insight['action']}")
-
-    with st.expander("💡 Why?"):
-        st.write(insight["explanation"])
-
-    with st.expander("📚 Evidence"):
-        for item in insight.get("evidence", []):
-            st.write(f"- {item}")
-
-
 if wins:
     st.subheader("✅ Today’s Wins")
     for insight in wins:
-        render_insight(insight)
+        render_explainable_item(insight)
 
 if watch_items:
     st.subheader("👀 Things to Watch")
     for insight in watch_items:
-        render_insight(insight)
+        render_explainable_item(insight)
 
 if info_items:
     st.subheader("ℹ️ Good to Know")
     for insight in info_items:
-        render_insight(insight)
+        render_explainable_item(insight)
 
 if not insights:
     st.info("No major insights yet. Phoenix will add insights as more data builds up.")
+
 
 # -------------------------
 # Coach
@@ -326,15 +288,6 @@ st.write(brief["reason"])
 
 st.divider()
 st.header("📊 Dashboard")
-
-
-def format_delta(value, unit):
-    if value is None:
-        return None
-
-    sign = "+" if value > 0 else ""
-    return f"{sign}{value:.1f} {unit} in 30d"
-
 
 weight = snapshot["weight"]
 body_fat = snapshot["body_fat"]
@@ -452,4 +405,4 @@ with state_col3:
     st.metric("Soreness", latest_soreness)
 
 
-st.caption("Project Phoenix v0.6-alpha")
+st.caption("Project Phoenix v0.6.5")
