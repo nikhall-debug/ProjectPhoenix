@@ -1,4 +1,5 @@
 import streamlit as st
+load_coach_plan_overrides
 
 from database import init_db, load_checkins, load_health_measurements, load_coach_feedback
 
@@ -41,3 +42,14 @@ if not feedback_df.empty:
     st.dataframe(feedback_df, use_container_width=True)
 else:
     st.info("No coach feedback saved yet.")
+
+    st.divider()
+
+st.header("Coach plan overrides")
+
+overrides_df = load_coach_plan_overrides()
+
+if not overrides_df.empty:
+    st.dataframe(overrides_df, use_container_width=True)
+else:
+    st.info("No coach plan overrides saved yet.")

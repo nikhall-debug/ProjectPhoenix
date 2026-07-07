@@ -52,6 +52,18 @@ def init_db():
         )
     """)
 
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS coach_plan_overrides (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            override_date TEXT,
+            original_training_type TEXT,
+            selected_plan TEXT,
+            extra_context TEXT,
+            final_training_type TEXT,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )   
+    """)
+
     conn.commit()
     conn.close()
 
@@ -263,15 +275,44 @@ def get_checkin_for_date(checkin_date):
 
 
 def load_checkins():
+
     conn = sqlite3.connect(DB_FILE)
+
     df = pd.read_sql_query(
+
         "SELECT * FROM daily_checkins ORDER BY checkin_date DESC, timestamp DESC",
-        conn
+
+        conn,
+
     )
+
     conn.close()
+
     return df
 
+def load_coach_plan_overrides():
 
+    conn = sqlite3.connect(DB_FILE)
+
+    df = pd.read_sql_query(
+
+        """
+
+        SELECT *
+
+        FROM coach_plan_overrides
+
+        ORDER BY override_date DESC, created_at DESC
+
+        """,
+
+        conn,
+
+    )
+
+    conn.close()
+
+    return df
 def load_health_measurements():
     conn = sqlite3.connect(DB_FILE)
     df = pd.read_sql_query(
@@ -286,7 +327,41 @@ def load_coach_feedback():
     conn = sqlite3.connect(DB_FILE)
     df = pd.read_sql_query(
         "SELECT * FROM coach_feedback ORDER BY feedback_date DESC, timestamp DESC",
-        conn
+        conn,
     )
     conn.close()
     return df
+
+
+def save_coach_plan_override(
+    override_date,
+    original_training_type,
+    selected_plan,
+    extra_context,
+    final_training_type,
+):
+    conn = sqlite3.connect(DB_FILE)
+    cursor = conn.cursor()
+
+    cursor.execute(
+        """
+        INSERT INTO coach_plan_overrides (
+            override_date,
+            original_training_type,
+            selected_plan,
+            extra_context,
+            final_training_type
+        )
+        VALUES (?, ?, ?, ?, ?)
+        """,
+        (
+            override_date.isoformat(),
+            original_training_type,
+            selected_plan,
+            extra_context,
+            final_training_type,
+        ),
+    )
+
+    conn.commit()
+    conn.close()
