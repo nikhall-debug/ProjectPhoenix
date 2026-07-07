@@ -1,7 +1,6 @@
 import streamlit as st
 
-from database import init_db, load_checkins, load_health_measurements
-
+from database import init_db, load_checkins, load_health_measurements, load_coach_feedback
 
 init_db()
 
@@ -31,3 +30,14 @@ if not checkins_df.empty:
     st.dataframe(checkins_df, use_container_width=True)
 else:
     st.info("No check-ins saved yet.")
+
+    st.divider()
+
+st.header("Coach feedback")
+
+feedback_df = load_coach_feedback()
+
+if not feedback_df.empty:
+    st.dataframe(feedback_df, use_container_width=True)
+else:
+    st.info("No coach feedback saved yet.")

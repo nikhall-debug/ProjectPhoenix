@@ -59,7 +59,20 @@ def exchange_code_for_tokens(code):
     return response.json()
 
 
+def token_response_is_valid(token_response):
+    return (
+        isinstance(token_response, dict)
+        and "body" in token_response
+        and isinstance(token_response["body"], dict)
+        and "access_token" in token_response["body"]
+        and "refresh_token" in token_response["body"]
+    )
+
+
 def save_tokens(token_response):
+    if not token_response_is_valid(token_response):
+        raise ValueError(f"Invalid Withings token response: {token_response}")
+
     with open(TOKEN_FILE, "w") as f:
         json.dump(token_response, f, indent=2)
 
@@ -72,8 +85,13 @@ def load_tokens():
         return json.load(f)
 
 
+def stored_tokens_are_valid():
+    tokens = load_tokens()
+    return token_response_is_valid(tokens)
+
+
 def withings_is_connected():
-    return load_tokens() is not None
+    return stored_tokens_are_valid()
 
 
 def normalize_withings_value(value, unit):
@@ -83,7 +101,7 @@ def normalize_withings_value(value, unit):
 def get_withings_measurements(limit=100, startdate=None):
     tokens = load_tokens()
 
-    if tokens is None:
+    if not token_response_is_valid(tokens):
         return []
 
     access_token = tokens["body"]["access_token"]

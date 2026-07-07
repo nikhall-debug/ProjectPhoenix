@@ -41,6 +41,17 @@ def init_db():
         )
     """)
 
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS coach_feedback (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            feedback_date TEXT NOT NULL,
+            timestamp TEXT NOT NULL,
+            recommendation TEXT,
+            response TEXT NOT NULL,
+            reason TEXT
+        )
+    """)
+
     conn.commit()
     conn.close()
 
@@ -48,6 +59,7 @@ def init_db():
 def save_checkin(checkin_date, lumen_score, fat_burn_percent, carb_burn_percent, energy, mood, soreness, notes):
     conn = sqlite3.connect(DB_FILE)
     cur = conn.cursor()
+
     cur.execute("""
         INSERT INTO daily_checkins
         (checkin_date, timestamp, lumen_score, fat_burn_percent, carb_burn_percent, energy, mood, soreness, notes)
@@ -63,6 +75,27 @@ def save_checkin(checkin_date, lumen_score, fat_burn_percent, carb_burn_percent,
         soreness,
         notes,
     ))
+
+    conn.commit()
+    conn.close()
+
+
+def save_coach_feedback(feedback_date, recommendation, response, reason):
+    conn = sqlite3.connect(DB_FILE)
+    cur = conn.cursor()
+
+    cur.execute("""
+        INSERT INTO coach_feedback
+        (feedback_date, timestamp, recommendation, response, reason)
+        VALUES (?, ?, ?, ?, ?)
+    """, (
+        str(feedback_date),
+        datetime.now().isoformat(timespec="seconds"),
+        recommendation,
+        response,
+        reason,
+    ))
+
     conn.commit()
     conn.close()
 
@@ -122,7 +155,6 @@ def get_latest_metric(source, metric_type):
     """, (source, metric_type))
 
     result = cur.fetchone()
-
     conn.close()
 
     if result is None:
@@ -133,6 +165,7 @@ def get_latest_metric(source, metric_type):
         "unit": result[1],
         "measured_at": result[2],
     }
+
 
 def has_checkin_for_date(checkin_date):
     conn = sqlite3.connect(DB_FILE)
@@ -147,9 +180,88 @@ def has_checkin_for_date(checkin_date):
     count = cur.fetchone()[0]
 
     conn.close()
-
     return count > 0
-    
+
+
+def get_latest_checkin():
+    conn = sqlite3.connect(DB_FILE)
+    cur = conn.cursor()
+
+    cur.execute("""
+        SELECT
+            checkin_date,
+            timestamp,
+            lumen_score,
+            fat_burn_percent,
+            carb_burn_percent,
+            energy,
+            mood,
+            soreness,
+            notes
+        FROM daily_checkins
+        ORDER BY checkin_date DESC, timestamp DESC
+        LIMIT 1
+    """)
+
+    result = cur.fetchone()
+    conn.close()
+
+    if result is None:
+        return None
+
+    return {
+        "checkin_date": result[0],
+        "timestamp": result[1],
+        "lumen_score": result[2],
+        "fat_burn_percent": result[3],
+        "carb_burn_percent": result[4],
+        "energy": result[5],
+        "mood": result[6],
+        "soreness": result[7],
+        "notes": result[8],
+    }
+
+
+def get_checkin_for_date(checkin_date):
+    conn = sqlite3.connect(DB_FILE)
+    cur = conn.cursor()
+
+    cur.execute("""
+        SELECT
+            checkin_date,
+            timestamp,
+            lumen_score,
+            fat_burn_percent,
+            carb_burn_percent,
+            energy,
+            mood,
+            soreness,
+            notes
+        FROM daily_checkins
+        WHERE checkin_date = ?
+        ORDER BY timestamp DESC
+        LIMIT 1
+    """, (str(checkin_date),))
+
+    result = cur.fetchone()
+    conn.close()
+
+    if result is None:
+        return None
+
+    return {
+        "checkin_date": result[0],
+        "timestamp": result[1],
+        "lumen_score": result[2],
+        "fat_burn_percent": result[3],
+        "carb_burn_percent": result[4],
+        "energy": result[5],
+        "mood": result[6],
+        "soreness": result[7],
+        "notes": result[8],
+    }
+
+
 def load_checkins():
     conn = sqlite3.connect(DB_FILE)
     df = pd.read_sql_query(
@@ -164,6 +276,16 @@ def load_health_measurements():
     conn = sqlite3.connect(DB_FILE)
     df = pd.read_sql_query(
         "SELECT * FROM health_measurements ORDER BY measured_at DESC",
+        conn
+    )
+    conn.close()
+    return df
+
+
+def load_coach_feedback():
+    conn = sqlite3.connect(DB_FILE)
+    df = pd.read_sql_query(
+        "SELECT * FROM coach_feedback ORDER BY feedback_date DESC, timestamp DESC",
         conn
     )
     conn.close()
