@@ -23,6 +23,57 @@ Project Phoenix is a personal health intelligence platform designed to combine d
 
 ---
 
+# v0.9.0 – Automatic Apple Health Integration
+Released: July 2026
+
+## 🚀 New
+
+### Automatic Apple Health Sync
+- Added automatic Apple Health integration via Health Auto Export.
+- Phoenix now reads synced Apple Health data directly from the AutoSync folder.
+- No manual ZIP import required.
+
+### New Apple Health Metrics
+Phoenix now automatically imports:
+
+- Heart Rate Variability (HRV)
+- Resting Heart Rate
+- Respiratory Rate
+- Active Energy
+- Exercise Minutes
+- Step Count
+
+### New Integration Module
+- Added `apple_health_sync.py`
+- Automatic startup synchronization
+- Duplicate protection
+- Automatic storage in `health_measurements`
+
+### Morning Snapshot
+- Added Apple Health sync status to the Morning Snapshot.
+
+## Architecture
+
+Phoenix now automatically collects data from:
+
+- Morning Check-in
+- Withings
+- Apple Health
+- Xert
+- Coach Feedback
+
+All data flows into a shared Athlete Context and Decision Engine.
+
+## Improvements
+
+- Archived the manual Apple Health ZIP import page.
+- Apple Health now behaves like a native Phoenix integration.
+- Continued modular integration architecture for future data sources.
+
+## Foundation
+
+This release completes the first generation of Phoenix's automatic health data platform and prepares the system for Athlete Context v2 and significantly richer coaching decisions.
+
 # v0.8.6 – Xert Integration and Athlete Context
 Released: July 2026
 

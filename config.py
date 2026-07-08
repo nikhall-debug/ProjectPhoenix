@@ -10,7 +10,4 @@ WITHINGS_REDIRECT_URI = os.getenv("WITHINGS_REDIRECT_URI")
 XERT_USERNAME = os.getenv("XERT_USERNAME")
 XERT_PASSWORD = os.getenv("XERT_PASSWORD")
 
-APPLE_AUTOSYNC_FOLDER = os.getenv(
-    "APPLE_AUTOSYNC_FOLDER",
-    "/Users/nikhall/Library/Mobile Documents/iCloud~com~ifunography~HealthExport/Documents/AutoSync",
-)
+APPLE_EXPORT_FOLDER = "/Users/nikhall/Library/Mobile Documents/iCloud~com~ifunography~HealthExport/Documents"
