@@ -2,6 +2,7 @@ from datetime import date
 
 import streamlit as st
 
+from athlete_context import build_athlete_context
 from database import init_db, save_checkin, save_xert_status_record
 from integrations.withings import (
     build_authorization_url,
@@ -14,8 +15,9 @@ from integrations.xert import (
     connect_xert,
     xert_is_connected,
     fetch_and_save_xert_status,
-    load_xert_status,
 )
+from morning_brief import build_morning_brief
+from recovery_engine import build_recovery_profile
 from snapshot import build_morning_snapshot
 from sync import (
     sync_withings_once_per_session,
@@ -29,13 +31,6 @@ st.set_page_config(page_title="Project Phoenix", page_icon="🔥", layout="wide"
 
 query_params = st.query_params
 withings_code = query_params.get("code", None)
-
-st.title("🔥 Good morning, Nik")
-st.subheader("☀ Morning")
-st.caption(
-    "Phoenix has already collected everything it can automatically. "
-    "I just need a few things that only you know."
-)
 
 if withings_code:
     if stored_tokens_are_valid():
@@ -56,17 +51,50 @@ sync_withings_once_per_session(st)
 sync_apple_health_autosync_once_per_session(st)
 
 snapshot = build_morning_snapshot()
+context = build_athlete_context()
+recovery_profile = build_recovery_profile(context)
+
+baselines = context["baselines"]
+
+morning_brief = build_morning_brief(context, recovery_profile, baselines)
+
 apple_result = st.session_state.get("apple_health_autosync_result")
 apple_health_available = apple_result is not None and apple_result.get("files_seen", 0) > 0
 
+st.title("🔥 Good morning, Nik")
+st.caption("Phoenix has collected what it can automatically. Here’s what it thinks about today.")
+
 st.divider()
+
+st.header("☀️ Morning Brief")
+
+col1, col2, col3, col4 = st.columns(4)
+
+with col1:
+    st.metric("Recovery", morning_brief["recovery_label"], f"{morning_brief['recovery_score']}/100")
+
+with col2:
+    st.metric("Training", morning_brief["training_label"])
+
+with col3:
+    st.metric("Metabolism", morning_brief["metabolism_label"])
+
+with col4:
+    st.metric("Confidence", f"{morning_brief['confidence']}%")
+
+st.subheader("Today’s Summary")
+
+for item in morning_brief["highlights"]:
+    st.write(item)
+
+st.info(morning_brief["recommendation"])
+
+st.divider()
+
 st.header("🌅 Morning Snapshot")
 
 if snapshot["completed"] == snapshot["total"]:
-    st.success(
-        "✅ Morning Snapshot Complete. Everything is up to date. "
-        "Phoenix is ready to help you make today’s decisions."
-    )
+    st.success("✅ Morning Snapshot Complete. Phoenix is ready.")
 else:
     st.warning(
         f"🟡 Morning Snapshot {snapshot['snapshot_percent']}% complete. "
@@ -104,6 +132,7 @@ if not withings_is_connected():
     st.link_button("Connect Withings", build_authorization_url())
 
 st.divider()
+
 st.header("✍️ Tell Phoenix what only you know")
 st.caption("Lumen, energy, mood, soreness, and optional notes. Keep it under 30 seconds.")
 
@@ -112,13 +141,7 @@ form_col1, form_col2, form_col3 = st.columns(3)
 with form_col1:
     checkin_date = st.date_input("Date", date.today())
     lumen_score = st.selectbox("Morning Lumen score", [1, 2, 3, 4, 5], index=2)
-    fat_burn_percent = st.slider(
-        "Estimated Fat burning %",
-        min_value=0,
-        max_value=100,
-        value=65,
-        help="Carbs are calculated automatically.",
-    )
+    fat_burn_percent = st.slider("Estimated Fat burning %", 0, 100, 65)
 
 carb_burn_percent = 100 - fat_burn_percent
 st.caption(f"Estimated fuel mix: {fat_burn_percent}% fat / {carb_burn_percent}% carbs")
@@ -146,34 +169,32 @@ if st.button("💾 Complete Morning Check-in"):
     st.rerun()
 
 st.divider()
+
 st.header("Your morning routine")
 
-st.markdown("### 1️⃣ Review today’s insights")
-st.write("See what Phoenix noticed today.")
 st.page_link("pages/2_Insights.py", label="🌟 Open Insights")
-
-st.markdown("### 2️⃣ Review today’s coaching")
-st.write("See today’s training recommendation.")
 st.page_link("pages/3_Training_Coach.py", label="🚴 Open Coach")
-
-st.markdown("### 3️⃣ Check your trends")
-st.write("Review longer-term progress.")
 st.page_link("pages/4_Trends.py", label="📈 Open Trends")
 
 st.divider()
-st.header("Xert Test")
 
-if xert_is_connected():
-    st.success("✅ Xert connected.")
+with st.expander("Developer tools"):
+    st.subheader("Xert")
 
-    if st.button("Fetch Xert training info"):
-        status = fetch_and_save_xert_status()
-        save_xert_status_record(status)
-        st.success("✅ Xert training info saved to Phoenix.")
+    if xert_is_connected():
+        st.success("✅ Xert connected.")
 
-else:
-    if st.button("Connect Xert"):
-        connect_xert()
-        st.success("✅ Xert token saved.")
-        st.rerun()
-st.caption(f"Project Phoenix v0.7 · Today’s snapshot: {snapshot['snapshot_percent']}% complete")
+        if st.button("Fetch Xert training info"):
+            status = fetch_and_save_xert_status()
+            save_xert_status_record(status)
+            st.success("✅ Xert training info saved to Phoenix.")
+    else:
+        if st.button("Connect Xert"):
+            connect_xert()
+            st.success("✅ Xert token saved.")
+            st.rerun()
+
+    st.subheader("Apple Health Sync")
+    st.write(apple_result)
+
+st.caption(f"Project Phoenix v0.9.2-alpha · Today’s snapshot: {snapshot['snapshot_percent']}% complete")

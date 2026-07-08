@@ -1,10 +1,29 @@
 from snapshot import build_morning_snapshot
-from database import get_latest_xert_status
+from database import get_latest_xert_status, get_latest_health_metric
+from baseline_engine import build_all_baselines
+
+APPLE_METRICS = {
+    "hrv": "apple_hrv_ms",
+    "resting_hr": "apple_resting_hr_bpm",
+    "respiratory_rate": "apple_respiratory_rate",
+    "blood_oxygen": "apple_blood_oxygen_percent",
+    "steps": "apple_steps",
+    "exercise_minutes": "apple_exercise_minutes",
+    "active_energy": "apple_active_energy_kj",
+    "walking_distance": "apple_walking_running_distance_km",
+    "walking_hr": "apple_walking_hr_bpm",
+    "sleep_total": "apple_sleep_total_hours",
+    "sleep_deep": "apple_sleep_deep_hours",
+    "sleep_rem": "apple_sleep_rem_hours",
+    "sleep_core": "apple_sleep_core_hours",
+    "sleep_awake": "apple_sleep_awake_hours",
+}
 
 
 def build_athlete_context():
     snapshot = build_morning_snapshot()
     xert = get_latest_xert_status()
+    baselines = build_all_baselines()
 
     today_checkin = snapshot.get("today_checkin")
     latest_checkin = snapshot.get("latest_checkin")
@@ -14,7 +33,9 @@ def build_athlete_context():
         "snapshot": snapshot,
         "snapshot_percent": snapshot.get("snapshot_percent"),
         "snapshot_complete": snapshot.get("snapshot_percent") == 100,
+        "baselines": baselines,
 
+        # Withings / body
         "weight": snapshot.get("weight"),
         "body_fat": snapshot.get("body_fat"),
         "muscle": snapshot.get("muscle"),
@@ -22,10 +43,10 @@ def build_athlete_context():
         "systolic": snapshot.get("systolic"),
         "diastolic": snapshot.get("diastolic"),
 
+        # Morning check-in
         "checkin": checkin,
         "today_checkin": today_checkin,
         "latest_checkin": latest_checkin,
-
         "energy": None,
         "mood": None,
         "soreness": None,
@@ -33,6 +54,24 @@ def build_athlete_context():
         "fat_burn_percent": None,
         "carb_burn_percent": None,
 
+        # Apple Health
+        "apple_health": {},
+        "hrv": None,
+        "resting_hr": None,
+        "respiratory_rate": None,
+        "blood_oxygen": None,
+        "steps": None,
+        "exercise_minutes": None,
+        "active_energy": None,
+        "walking_distance": None,
+        "walking_hr": None,
+        "sleep_total": None,
+        "sleep_deep": None,
+        "sleep_rem": None,
+        "sleep_core": None,
+        "sleep_awake": None,
+
+        # Xert
         "xert": xert,
         "xert_status": None,
         "xert_ftp": None,
@@ -51,6 +90,13 @@ def build_athlete_context():
         context["lumen_score"] = checkin.get("lumen_score")
         context["fat_burn_percent"] = checkin.get("fat_burn_percent")
         context["carb_burn_percent"] = checkin.get("carb_burn_percent")
+
+    for context_key, metric_type in APPLE_METRICS.items():
+        metric = get_latest_health_metric(metric_type)
+        context["apple_health"][context_key] = metric
+
+        if metric:
+            context[context_key] = metric.get("value")
 
     if xert:
         context["xert_status"] = xert.get("status")

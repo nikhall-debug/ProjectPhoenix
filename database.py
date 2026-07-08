@@ -300,6 +300,70 @@ def get_latest_metric(source, metric_type):
         "measured_at": result[2],
     }
 
+def get_latest_health_metric(metric_type):
+    conn = sqlite3.connect(DB_FILE)
+    cur = conn.cursor()
+
+    cur.execute("""
+        SELECT
+            metric_type,
+            value,
+            unit,
+            measured_at,
+            source
+        FROM health_measurements
+        WHERE metric_type = ?
+        ORDER BY measured_at DESC
+        LIMIT 1
+    """, (metric_type,))
+
+    result = cur.fetchone()
+    conn.close()
+
+    if result is None:
+        return None
+
+    return {
+        "metric_type": result[0],
+        "value": result[1],
+        "unit": result[2],
+        "measured_at": result[3],
+        "source": result[4],
+    }
+
+def get_metric_values_since(metric_type, days=30):
+    conn = sqlite3.connect(DB_FILE)
+    cur = conn.cursor()
+
+    cutoff = datetime.now() - pd.Timedelta(days=days)
+
+    cur.execute("""
+        SELECT
+            value,
+            unit,
+            measured_at,
+            source
+        FROM health_measurements
+        WHERE metric_type = ?
+          AND measured_at >= ?
+        ORDER BY measured_at DESC
+    """, (
+        metric_type,
+        cutoff.isoformat(),
+    ))
+
+    rows = cur.fetchall()
+    conn.close()
+
+    return [
+        {
+            "value": row[0],
+            "unit": row[1],
+            "measured_at": row[2],
+            "source": row[3],
+        }
+        for row in rows
+    ]
 
 def has_checkin_for_date(checkin_date):
     conn = sqlite3.connect(DB_FILE)

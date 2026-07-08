@@ -23,6 +23,111 @@ Project Phoenix is a personal health intelligence platform designed to combine d
 
 ---
 
+## v0.9.2 — Readiness Intelligence & Narrative Coaching
+
+### Added
+- Readiness Engine
+- Narrative Engine
+- Coaching narrative generation
+- Training opportunity assessment
+- Risk assessment
+- Confidence scoring
+
+### Improved
+- Decision Engine now uses Readiness instead of raw physiological rules
+- Coach page redesigned around athlete-friendly coaching
+- Recovery reasoning separated from decision making
+
+### Architecture
+
+Sensors
+→ Athlete Context
+→ Baseline Engine
+→ Recovery Engine
+→ Readiness Engine
+→ Decision Engine
+→ Narrative Engine
+→ Coach
+
+This release marks the transition from a health dashboard to an intelligent coaching system.
+
+Project Phoenix v0.9
+
+Major milestone: unified data collection.
+
+New
+- Integrated Withings API for body composition and health metrics
+- Integrated Xert API for training freshness and fitness status
+- Added Apple Health import via Health Auto Export
+- Automatic syncing of supported services at startup
+- Morning Snapshot now combines data from multiple sources
+- Improved Streamlit dashboard layout and expandable sections
+
+Improved
+- Cleaner UI presentation
+- Better separation between integrations, snapshot building and decision logic
+- More robust data storage architecture
+
+Foundation
+Phoenix now has a unified health data lake capable of combining:
+- Apple Health
+- Withings
+- Xert
+- Lumen
+- Morning Check-in
+
+This establishes the platform for the next major milestone:
+v1.0 – Baseline Intelligence & Recovery Engine.
+
+# v0.9.0 – Automatic Apple Health Integration
+Released: July 2026
+
+## 🚀 New
+
+### Automatic Apple Health JSON Integration
+- Replaced manual Apple Health ZIP imports with automatic JSON synchronization.
+- Phoenix now reads Health Auto Export JSON files directly from iCloud.
+- Automatic imports occur on startup with duplicate protection.
+
+### New Automatic Data Sources
+
+Phoenix now automatically collects data from:
+
+- Morning Check-in
+- Withings
+- Apple Health
+- Xert
+
+### Apple Health Metrics
+
+Added automatic support for:
+
+- Heart Rate Variability
+- Resting Heart Rate
+- Respiratory Rate
+- Blood Oxygen
+- Active Energy
+- Exercise Minutes
+- Step Count
+- Walking Distance
+- Walking Heart Rate
+- Sleep Analysis
+  - Total Sleep
+  - Deep Sleep
+  - Core Sleep
+  - REM Sleep
+  - Awake Time
+
+### Architecture
+
+Added a dedicated Apple Health JSON integration module.
+
+The system now imports official Health Auto Export JSON files rather than reverse-engineering binary sync files.
+
+### Foundation
+
+This release establishes Phoenix's automatic health data pipeline and provides the data foundation for Athlete Context v2, Recovery Intelligence, and significantly smarter coaching.
+
 # v0.9.0 – Automatic Apple Health Integration
 Released: July 2026
 
