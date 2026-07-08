@@ -2,13 +2,19 @@ from datetime import date
 
 import streamlit as st
 
-from database import init_db, save_checkin
+from database import init_db, save_checkin, save_xert_status_record
 from integrations.withings import (
     build_authorization_url,
     exchange_code_for_tokens,
     save_tokens,
     withings_is_connected,
     stored_tokens_are_valid,
+)
+from integrations.xert import (
+    connect_xert,
+    xert_is_connected,
+    fetch_and_save_xert_status,
+    load_xert_status,
 )
 from snapshot import build_morning_snapshot
 from sync import sync_withings_once_per_session
@@ -144,4 +150,19 @@ st.write("Review longer-term progress.")
 st.page_link("pages/4_Trends.py", label="📈 Open Trends")
 
 st.divider()
+st.header("Xert Test")
+
+if xert_is_connected():
+    st.success("✅ Xert connected.")
+
+    if st.button("Fetch Xert training info"):
+        status = fetch_and_save_xert_status()
+        save_xert_status_record(status)
+        st.success("✅ Xert training info saved to Phoenix.")
+
+else:
+    if st.button("Connect Xert"):
+        connect_xert()
+        st.success("✅ Xert token saved.")
+        st.rerun()
 st.caption(f"Project Phoenix v0.7 · Today’s snapshot: {snapshot['snapshot_percent']}% complete")

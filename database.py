@@ -61,7 +61,30 @@ def init_db():
             extra_context TEXT,
             final_training_type TEXT,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        )   
+        )
+    """)
+
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS xert_status (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            fetched_at TEXT NOT NULL,
+            status TEXT,
+            source TEXT,
+            ftp REAL,
+            ltp REAL,
+            hie REAL,
+            pp REAL,
+            tl_low REAL,
+            tl_high REAL,
+            tl_peak REAL,
+            tl_total REAL,
+            target_xss_low REAL,
+            target_xss_high REAL,
+            target_xss_peak REAL,
+            target_xss_total REAL,
+            wotd_type TEXT,
+            raw_data TEXT
+        )
     """)
 
     conn.commit()
@@ -92,26 +115,6 @@ def save_checkin(checkin_date, lumen_score, fat_burn_percent, carb_burn_percent,
     conn.close()
 
 
-def save_coach_feedback(feedback_date, recommendation, response, reason):
-    conn = sqlite3.connect(DB_FILE)
-    cur = conn.cursor()
-
-    cur.execute("""
-        INSERT INTO coach_feedback
-        (feedback_date, timestamp, recommendation, response, reason)
-        VALUES (?, ?, ?, ?, ?)
-    """, (
-        str(feedback_date),
-        datetime.now().isoformat(timespec="seconds"),
-        recommendation,
-        response,
-        reason,
-    ))
-
-    conn.commit()
-    conn.close()
-
-
 def save_health_measurement(source, metric_type, value, unit, measured_at, raw_type=None, raw_data=None):
     conn = sqlite3.connect(DB_FILE)
     cur = conn.cursor()
@@ -136,6 +139,125 @@ def save_health_measurement(source, metric_type, value, unit, measured_at, raw_t
     conn.close()
 
     return inserted == 1
+
+
+def save_coach_feedback(feedback_date, recommendation, response, reason):
+    conn = sqlite3.connect(DB_FILE)
+    cur = conn.cursor()
+
+    cur.execute("""
+        INSERT INTO coach_feedback
+        (feedback_date, timestamp, recommendation, response, reason)
+        VALUES (?, ?, ?, ?, ?)
+    """, (
+        str(feedback_date),
+        datetime.now().isoformat(timespec="seconds"),
+        recommendation,
+        response,
+        reason,
+    ))
+
+    conn.commit()
+    conn.close()
+
+
+def save_coach_plan_override(
+    override_date,
+    original_training_type,
+    selected_plan,
+    extra_context,
+    final_training_type,
+):
+    conn = sqlite3.connect(DB_FILE)
+    cur = conn.cursor()
+
+    cur.execute("""
+        INSERT INTO coach_plan_overrides
+        (
+            override_date,
+            original_training_type,
+            selected_plan,
+            extra_context,
+            final_training_type
+        )
+        VALUES (?, ?, ?, ?, ?)
+    """, (
+        override_date.isoformat(),
+        original_training_type,
+        selected_plan,
+        extra_context,
+        final_training_type,
+    ))
+
+    conn.commit()
+    conn.close()
+
+
+def save_xert_status_record(status_response):
+    import json
+
+    today = datetime.now().date().isoformat()
+
+    cleaned_raw = dict(status_response)
+    cleaned_raw.pop("weight", None)
+
+    signature = status_response.get("signature", {})
+    tl = status_response.get("tl", {})
+    target_xss = status_response.get("targetXSS", {})
+    wotd = status_response.get("wotd", {})
+
+    conn = sqlite3.connect(DB_FILE)
+    cur = conn.cursor()
+
+    cur.execute("""
+        DELETE FROM xert_status
+        WHERE DATE(fetched_at) = ?
+    """, (today,))
+
+    cur.execute("""
+        INSERT INTO xert_status
+        (
+            fetched_at,
+            status,
+            source,
+            ftp,
+            ltp,
+            hie,
+            pp,
+            tl_low,
+            tl_high,
+            tl_peak,
+            tl_total,
+            target_xss_low,
+            target_xss_high,
+            target_xss_peak,
+            target_xss_total,
+            wotd_type,
+            raw_data
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    """, (
+        datetime.now().isoformat(timespec="seconds"),
+        status_response.get("status"),
+        status_response.get("source"),
+        signature.get("ftp"),
+        signature.get("ltp"),
+        signature.get("hie"),
+        signature.get("pp"),
+        tl.get("low"),
+        tl.get("high"),
+        tl.get("peak"),
+        tl.get("total"),
+        target_xss.get("low"),
+        target_xss.get("high"),
+        target_xss.get("peak"),
+        target_xss.get("total"),
+        wotd.get("type"),
+        json.dumps(cleaned_raw),
+    ))
+
+    conn.commit()
+    conn.close()
 
 
 def get_latest_measurement_time(source):
@@ -275,49 +397,20 @@ def get_checkin_for_date(checkin_date):
 
 
 def load_checkins():
-
     conn = sqlite3.connect(DB_FILE)
-
     df = pd.read_sql_query(
-
         "SELECT * FROM daily_checkins ORDER BY checkin_date DESC, timestamp DESC",
-
         conn,
-
     )
-
     conn.close()
-
     return df
 
-def load_coach_plan_overrides():
 
-    conn = sqlite3.connect(DB_FILE)
-
-    df = pd.read_sql_query(
-
-        """
-
-        SELECT *
-
-        FROM coach_plan_overrides
-
-        ORDER BY override_date DESC, created_at DESC
-
-        """,
-
-        conn,
-
-    )
-
-    conn.close()
-
-    return df
 def load_health_measurements():
     conn = sqlite3.connect(DB_FILE)
     df = pd.read_sql_query(
         "SELECT * FROM health_measurements ORDER BY measured_at DESC",
-        conn
+        conn,
     )
     conn.close()
     return df
@@ -333,35 +426,42 @@ def load_coach_feedback():
     return df
 
 
-def save_coach_plan_override(
-    override_date,
-    original_training_type,
-    selected_plan,
-    extra_context,
-    final_training_type,
-):
+def load_coach_plan_overrides():
     conn = sqlite3.connect(DB_FILE)
-    cursor = conn.cursor()
-
-    cursor.execute(
-        """
-        INSERT INTO coach_plan_overrides (
-            override_date,
-            original_training_type,
-            selected_plan,
-            extra_context,
-            final_training_type
-        )
-        VALUES (?, ?, ?, ?, ?)
-        """,
-        (
-            override_date.isoformat(),
-            original_training_type,
-            selected_plan,
-            extra_context,
-            final_training_type,
-        ),
+    df = pd.read_sql_query(
+        "SELECT * FROM coach_plan_overrides ORDER BY override_date DESC, created_at DESC",
+        conn,
     )
-
-    conn.commit()
     conn.close()
+    return df
+
+
+def load_xert_status_history():
+    conn = sqlite3.connect(DB_FILE)
+    df = pd.read_sql_query(
+        "SELECT * FROM xert_status ORDER BY fetched_at DESC",
+        conn,
+    )
+    conn.close()
+    return df
+
+
+def get_latest_xert_status():
+    conn = sqlite3.connect(DB_FILE)
+    cur = conn.cursor()
+
+    cur.execute("""
+        SELECT *
+        FROM xert_status
+        ORDER BY fetched_at DESC
+        LIMIT 1
+    """)
+
+    result = cur.fetchone()
+    columns = [description[0] for description in cur.description] if cur.description else []
+    conn.close()
+
+    if result is None:
+        return None
+
+    return dict(zip(columns, result))

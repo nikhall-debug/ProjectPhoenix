@@ -7,10 +7,20 @@ __pycache__/
 
 # Secrets
 .env
+*.env
 withings_tokens.json
+xert_tokens.json
+xert_status.json
 
 # Local database
 phoenix.db
+
+# IDE
+.vscode/
+.idea/
+
+# Logs
+*.log
 
 # macOS
 .DS_Store

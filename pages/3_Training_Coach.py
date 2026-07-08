@@ -2,20 +2,15 @@ from datetime import date
 
 import streamlit as st
 
-from database import (
-    init_db,
-    save_coach_plan_override,
-)
-from decision_engine import build_training_decision, adapt_training_decision
-from snapshot import build_morning_snapshot
+from database import init_db, save_coach_plan_override
+from decision_engine import build_daily_decision, adapt_training_decision
 
 
 init_db()
 
 st.set_page_config(page_title="Phoenix Coach", page_icon="🚴", layout="wide")
 
-snapshot = build_morning_snapshot()
-initial_decision = build_training_decision(snapshot)
+initial_decision = build_daily_decision()
 
 st.title("🚴 Training Coach")
 st.caption("Phoenix makes the first suggestion. You decide whether it fits today.")
@@ -42,17 +37,6 @@ extra_context = st.text_area(
 )
 
 decision = adapt_training_decision(initial_decision, plan, extra_context)
-if st.button("💾 Save today's plan"):
-
-    save_coach_plan_override(
-        override_date=date.today(),
-        original_training_type=initial_decision["training_type"],
-        selected_plan=plan,
-        extra_context=extra_context,
-        final_training_type=decision["training_type"],
-    )
-
-    st.success("Today's coaching decision has been saved.")
 
 st.subheader(decision["training_type"])
 
@@ -82,6 +66,17 @@ with st.expander("🔁 Alternatives"):
     for alternative in decision["alternatives"]:
         st.write(f"- {alternative}")
 
+if st.button("💾 Save today's plan"):
+    save_coach_plan_override(
+        override_date=date.today(),
+        original_training_type=initial_decision["training_type"],
+        selected_plan=plan,
+        extra_context=extra_context,
+        final_training_type=decision["training_type"],
+    )
+
+    st.success("Today's coaching decision has been saved.")
+
 st.divider()
 
-st.caption("Project Phoenix v0.8.3")
+st.caption("Project Phoenix v0.8.6-alpha")

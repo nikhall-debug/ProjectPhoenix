@@ -1,77 +1,223 @@
-def build_training_decision(snapshot):
-    today = snapshot.get("today_checkin")
-    latest = snapshot.get("latest_checkin")
+from athlete_context import build_athlete_context
 
-    checkin = today or latest
 
-    if not checkin:
+def build_daily_decision():
+    """
+    Main entry point for the Coach page.
+
+    Builds a complete athlete context, then creates today's first
+    Phoenix training recommendation.
+    """
+    context = build_athlete_context()
+    decision = build_training_decision(context)
+    decision["context"] = context
+    return decision
+
+
+def build_training_decision(context):
+    """
+    Creates Phoenix's first training recommendation for today.
+
+    Uses:
+    - Morning check-in
+    - Lumen
+    - Xert status/training load when available
+    """
+
+    if not context.get("checkin"):
         return _no_checkin_decision()
 
-    energy = checkin["energy"]
-    soreness = checkin["soreness"]
-    fat_burn = checkin["fat_burn_percent"]
-    lumen_score = checkin["lumen_score"]
+    energy = context.get("energy")
+    soreness = context.get("soreness")
+    fat_burn = context.get("fat_burn_percent")
+    lumen_score = context.get("lumen_score")
 
-    reasons = _build_reasons(energy, soreness, lumen_score)
+    xert_status = context.get("xert_status")
+    xert_training_load = context.get("xert_training_load")
+    xert_target_xss = context.get("xert_target_xss")
 
-    if soreness >= 7 or energy <= 3:
+    reasons = _build_reasons(
+        energy=energy,
+        soreness=soreness,
+        lumen_score=lumen_score,
+        xert_status=xert_status,
+        xert_training_load=xert_training_load,
+        xert_target_xss=xert_target_xss,
+    )
+
+    if soreness is not None and soreness >= 7:
         return _decision(
             training_type="Recovery",
             duration="20–45 min",
             intensity="Very easy",
-            confidence="Medium",
+            confidence=_confidence(context),
             summary=(
                 "Today looks better suited to recovery than training. "
                 "Keep movement gentle and avoid intensity."
             ),
             why=reasons,
-            alternatives=["Easy walk", "Mobility", "Rest day"],
+            alternatives=["Walk with Eathen", "Mobility", "Rest day"],
+            action=[
+                "Keep intensity very low.",
+                "Prioritise hydration, protein, and sleep.",
+                "Avoid turning recovery into hidden training.",
+            ],
         )
 
-    if energy >= 8 and soreness <= 3 and fat_burn >= 60:
+    if energy is not None and energy <= 3:
+        return _decision(
+            training_type="Recovery",
+            duration="20–45 min",
+            intensity="Very easy",
+            confidence=_confidence(context),
+            summary=(
+                "Your energy is very low today, so Phoenix would keep training optional "
+                "and recovery-focused."
+            ),
+            why=reasons,
+            alternatives=["Walk with Eathen", "Mobility", "Complete rest"],
+            action=[
+                "Do something gentle only if it makes you feel better.",
+                "Skip intensity.",
+                "Use today to support tomorrow.",
+            ],
+        )
+
+    if xert_status == "Detraining":
+        return _decision(
+            training_type="Easy endurance restart",
+            duration="45–75 min",
+            intensity="Easy Zone 2",
+            confidence=_confidence(context),
+            summary=(
+                "Xert currently classifies you as detraining, so Phoenix would use today "
+                "to rebuild rhythm with easy aerobic work rather than chasing intensity."
+            ),
+            why=reasons,
+            alternatives=[
+                "45-minute Zone 2 ride",
+                "Long walk with Eathen",
+                "Light strength and mobility",
+            ],
+            action=[
+                "Keep it easy enough that you finish fresh.",
+                "Focus on consistency rather than performance.",
+                "If you feel unusually good after 15 minutes, extend the ride rather than increasing intensity.",
+            ],
+        )
+
+    if xert_target_xss is not None and xert_target_xss == 0:
+        return _decision(
+            training_type="Low-load day",
+            duration="30–60 min",
+            intensity="Easy",
+            confidence=_confidence(context),
+            summary=(
+                "Xert is not currently asking for training load today, so Phoenix would keep "
+                "the session light unless you have a specific plan."
+            ),
+            why=reasons,
+            alternatives=[
+                "Easy spin",
+                "Walk with Eathen",
+                "Mobility",
+            ],
+            action=[
+                "Avoid forcing a hard session just to fill the day.",
+                "Use the Coach options below if you have a race or another specific plan.",
+            ],
+        )
+
+    if (
+        energy is not None
+        and soreness is not None
+        and fat_burn is not None
+        and energy >= 8
+        and soreness <= 3
+        and fat_burn >= 60
+    ):
         return _decision(
             training_type="Endurance ride",
             duration="60–90 min",
             intensity="Zone 2",
-            confidence="Medium",
+            confidence=_confidence(context),
             summary="Today looks like a good day for a steady aerobic endurance ride.",
             why=reasons,
-            alternatives=["45-minute Zone 2 ride", "Light strength work", "Long walk"],
+            alternatives=[
+                "45-minute Zone 2 ride",
+                "Light strength work",
+                "Long walk",
+            ],
+            action=[
+                "Stay mostly aerobic.",
+                "Fuel appropriately if the ride goes over an hour.",
+                "Finish feeling like you could do more.",
+            ],
         )
 
-    if energy >= 7 and soreness <= 4:
+    if energy is not None and soreness is not None and energy >= 7 and soreness <= 4:
         return _decision(
             training_type="Easy aerobic ride",
             duration="45–60 min",
             intensity="Easy Zone 2",
-            confidence="Medium",
+            confidence=_confidence(context),
             summary="You look ready for gentle aerobic work without pushing too hard.",
             why=reasons,
-            alternatives=["Recovery walk", "Mobility", "Short endurance ride"],
+            alternatives=[
+                "Recovery walk",
+                "Mobility",
+                "Short endurance ride",
+            ],
+            action=[
+                "Keep the ride conversational.",
+                "Avoid turning it into a test.",
+                "Use the first 15 minutes to see how the body wakes up.",
+            ],
         )
 
-    if energy <= 5 or soreness >= 5:
+    if (
+        (energy is not None and energy <= 5)
+        or (soreness is not None and soreness >= 5)
+    ):
         return _decision(
             training_type="Light recovery",
             duration="30–45 min",
             intensity="Easy",
-            confidence="Medium",
+            confidence=_confidence(context),
             summary="Today looks like a day to keep things easy and avoid unnecessary fatigue.",
             why=reasons,
-            alternatives=["Walk with Eathen", "Mobility", "Very easy spin"],
+            alternatives=[
+                "Walk with Eathen",
+                "Mobility",
+                "Very easy spin",
+            ],
+            action=[
+                "Choose movement that leaves you fresher, not drained.",
+                "Do not chase watts.",
+                "Keep the session short if motivation stays low.",
+            ],
         )
 
     return _decision(
         training_type="Steady endurance",
         duration="45–60 min",
         intensity="Easy to moderate",
-        confidence="Low–Medium",
+        confidence=_confidence(context),
         summary=(
             "Nothing strongly points toward either hard training or full recovery, "
             "so a steady endurance session is the safest default."
         ),
         why=reasons,
-        alternatives=["Short Zone 2 ride", "Walk", "Light strength"],
+        alternatives=[
+            "Short Zone 2 ride",
+            "Walk with Eathen",
+            "Light strength",
+        ],
+        action=[
+            "Start easy.",
+            "Keep the session controlled.",
+            "Adjust based on how you feel after warming up.",
+        ],
     )
 
 
@@ -97,7 +243,7 @@ def adapt_training_decision(decision, plan, extra_context=""):
             alternatives=[
                 "Rest until race time",
                 "Short opener only if you usually respond well to it",
-                "Easy walk to stay loose",
+                "Easy walk with Eathen to stay loose",
             ],
             action=[
                 "Keep any pre-race riding very easy.",
@@ -119,7 +265,7 @@ def adapt_training_decision(decision, plan, extra_context=""):
             ),
             why=[
                 "You are overriding the first recommendation toward more intensity.",
-                "Phoenix does not yet have Xert/training-load data, so caution is sensible.",
+                "Phoenix is now seeing training context, but it still does not yet know your full recent ride history.",
                 "Use the first 10–15 minutes as a reality check.",
             ],
             alternatives=[
@@ -151,7 +297,7 @@ def adapt_training_decision(decision, plan, extra_context=""):
             ],
             alternatives=[
                 "30-minute Zone 2 spin",
-                "20-minute walk",
+                "20-minute walk with Eathen",
                 "Mobility and light strength",
             ],
             action=[
@@ -203,7 +349,7 @@ def adapt_training_decision(decision, plan, extra_context=""):
             why=[
                 "You indicated that today does not fit the original recommendation.",
                 f"Your context: {context_text}",
-                "Phoenix will handle this better once v0.8 stores and learns from these plan overrides.",
+                "Phoenix will handle this better once it starts learning from repeated plan overrides.",
             ],
             alternatives=[
                 "Keep it easy",
@@ -220,29 +366,78 @@ def adapt_training_decision(decision, plan, extra_context=""):
     return decision
 
 
-def _build_reasons(energy, soreness, lumen_score):
+def _build_reasons(
+    energy,
+    soreness,
+    lumen_score,
+    xert_status=None,
+    xert_training_load=None,
+    xert_target_xss=None,
+):
     reasons = []
 
-    if energy >= 7:
-        reasons.append(f"Energy is good at {energy}/10.")
-    elif energy <= 4:
-        reasons.append(f"Energy is low at {energy}/10.")
+    if energy is not None:
+        if energy >= 7:
+            reasons.append(f"Energy is good at {energy}/10.")
+        elif energy <= 4:
+            reasons.append(f"Energy is low at {energy}/10.")
+        else:
+            reasons.append(f"Energy is moderate at {energy}/10.")
     else:
-        reasons.append(f"Energy is moderate at {energy}/10.")
+        reasons.append("Energy is missing from today’s context.")
 
-    if soreness <= 3:
-        reasons.append(f"Soreness is low at {soreness}/10.")
-    elif soreness >= 7:
-        reasons.append(f"Soreness is high at {soreness}/10.")
+    if soreness is not None:
+        if soreness <= 3:
+            reasons.append(f"Soreness is low at {soreness}/10.")
+        elif soreness >= 7:
+            reasons.append(f"Soreness is high at {soreness}/10.")
+        else:
+            reasons.append(f"Soreness is moderate at {soreness}/10.")
     else:
-        reasons.append(f"Soreness is moderate at {soreness}/10.")
+        reasons.append("Soreness is missing from today’s context.")
 
-    if lumen_score <= 3:
-        reasons.append(f"Lumen score is {lumen_score}, suggesting good fat-burning availability.")
+    if lumen_score is not None:
+        if lumen_score <= 3:
+            reasons.append(f"Lumen score is {lumen_score}, suggesting good fat-burning availability.")
+        else:
+            reasons.append(f"Lumen score is {lumen_score}, suggesting more carb use today.")
     else:
-        reasons.append(f"Lumen score is {lumen_score}, suggesting more carb use today.")
+        reasons.append("Lumen score is missing from today’s context.")
+
+    if xert_status:
+        reasons.append(f"Xert currently reports your training status as {xert_status}.")
+
+    if xert_training_load is not None:
+        reasons.append(f"Xert total training load is {xert_training_load:.1f}.")
+
+    if xert_target_xss is not None:
+        reasons.append(f"Xert target XSS for today is {xert_target_xss:.0f}.")
 
     return reasons
+
+
+def _confidence(context):
+    score = 0
+
+    if context.get("today_checkin"):
+        score += 1
+
+    if context.get("weight"):
+        score += 1
+
+    if context.get("xert"):
+        score += 1
+
+    if context.get("lumen_score") is not None:
+        score += 1
+
+    if score >= 4:
+        return "High"
+
+    if score >= 2:
+        return "Medium"
+
+    return "Low"
 
 
 def _decision(
@@ -273,9 +468,9 @@ def _no_checkin_decision():
         duration="—",
         intensity="Unknown",
         confidence="Low",
-        summary="Complete today's morning check-in so Phoenix can make a useful recommendation.",
+        summary="Complete today’s morning check-in so Phoenix can make a useful recommendation.",
         why=[
-            "Phoenix does not yet have today's energy, soreness, or Lumen data.",
+            "Phoenix does not yet have today’s energy, soreness, or Lumen data.",
         ],
         alternatives=[
             "Complete morning check-in",

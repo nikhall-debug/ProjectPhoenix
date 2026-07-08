@@ -35,6 +35,73 @@ All notable changes to Project Phoenix will be documented in this file.
 Project Phoenix is a personal health intelligence platform designed to combine data from multiple health sources with subjective daily input to provide personalized insights, coaching, and long-term health guidance.
 
 ---
+# v0.8.4 – Decision Engine Foundation
+Released: July 2026
+
+## Added
+
+### Decision Engine
+
+- Introduced a dedicated `decision_engine.py` module.
+- Replaced the previous direct coaching logic with a structured decision engine.
+- Recommendations are now returned as structured decisions instead of simple text.
+
+### Adaptive Coaching
+
+Phoenix now adapts recommendations based on today's plans.
+
+Supported coaching scenarios:
+
+- Standard recommendation
+- Race day
+- Train harder
+- 30-minute session
+- Recovery only
+- Flexible / custom plans
+
+### Coaching Decisions
+
+Recommendations now include:
+
+- Training type
+- Duration
+- Intensity
+- Confidence level
+- Explanation ("Why?")
+- Alternative suggestions
+- Action plan
+
+### Coach Behaviour Tracking
+
+Added storage for coaching plan overrides.
+
+Phoenix now records:
+
+- Original recommendation
+- User-selected plan
+- Additional context
+- Final adapted recommendation
+
+This forms the foundation of the future Phoenix Memory system.
+
+## Improved
+
+- Training Coach redesigned around the Decision Engine.
+- Better separation between decision logic and user interface.
+- Coach recommendations are now extensible for future integrations.
+
+## Foundation for v0.8.5
+
+Prepared the project for Xert integration.
+
+Future coaching will incorporate:
+
+- Training freshness
+- Training load
+- Fitness signature
+- Training recommendations
+
+before generating daily coaching advice.
 
 # v0.7.0 – Workflow Redesign
 Released: July 2026

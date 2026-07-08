@@ -1,8 +1,13 @@
 import streamlit as st
-load_coach_plan_overrides
 
-from database import init_db, load_checkins, load_health_measurements, load_coach_feedback
-
+from database import (
+    init_db,
+    load_checkins,
+    load_health_measurements,
+    load_coach_feedback,
+    load_coach_plan_overrides,
+    load_xert_status_history,
+)
 init_db()
 
 st.set_page_config(page_title="Phoenix Data Explorer", page_icon="📊", layout="wide")
@@ -53,3 +58,14 @@ if not overrides_df.empty:
     st.dataframe(overrides_df, use_container_width=True)
 else:
     st.info("No coach plan overrides saved yet.")
+
+    st.divider()
+
+st.header("Xert status history")
+
+xert_df = load_xert_status_history()
+
+if not xert_df.empty:
+    st.dataframe(xert_df, use_container_width=True)
+else:
+    st.info("No Xert status saved yet.")
