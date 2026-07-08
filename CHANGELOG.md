@@ -1,18 +1,5 @@
 # Changelog
 
-## v0.1 (5 July 2026)
-
-Initial release.
-
-### Added
-
-- First Streamlit application
-- SQLite database
-- Daily check-in
-- Local development environment
-- Git repository
-- README
-- Roadmap
 
 ## Vision
 
@@ -35,6 +22,41 @@ All notable changes to Project Phoenix will be documented in this file.
 Project Phoenix is a personal health intelligence platform designed to combine data from multiple health sources with subjective daily input to provide personalized insights, coaching, and long-term health guidance.
 
 ---
+
+# v0.8.6 – Xert Integration and Athlete Context
+Released: July 2026
+
+## Added
+
+- Added Xert authentication and token storage.
+- Added Xert training info fetch.
+- Added Xert status storage in SQLite.
+- Added one Xert snapshot per day.
+- Added `athlete_context.py` as the central context layer.
+- Decision Engine now uses Athlete Context.
+- Coach recommendations now include Xert status, training load, and target XSS.
+- Xert data is visible in Data Explorer.
+
+## Improved
+
+- Withings remains the source of truth for body weight.
+- Xert weight is ignored.
+- Raw Xert JSON is hidden from the main app page.
+- Training Coach is now better prepared for future Phoenix Memory and Apple Health integrations.
+
+## Foundation
+
+This release establishes the Athlete Context architecture:
+
+- Morning Check-in
+- Lumen
+- Withings
+- Xert
+- Coach feedback
+- Plan overrides
+
+are now moving toward one shared context for the Decision Engine.
+
 # v0.8.4 – Decision Engine Foundation
 Released: July 2026
 

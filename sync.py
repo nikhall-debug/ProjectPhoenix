@@ -2,6 +2,7 @@ from datetime import datetime
 
 from database import get_latest_measurement_time, save_health_measurement
 from integrations.withings import get_withings_measurements, stored_tokens_are_valid
+from integrations.apple_health_sync import sync_health_auto_export_folder
 
 
 def sync_withings_once_per_session(st):
@@ -34,3 +35,16 @@ def sync_withings_once_per_session(st):
         )
 
     st.session_state["withings_synced_this_session"] = True
+
+
+def sync_apple_health_autosync_once_per_session(st):
+    if "apple_health_autosync_done" not in st.session_state:
+        st.session_state["apple_health_autosync_done"] = False
+
+    if st.session_state["apple_health_autosync_done"]:
+        return
+
+    result = sync_health_auto_export_folder()
+
+    st.session_state["apple_health_autosync_done"] = True
+    st.session_state["apple_health_autosync_result"] = result

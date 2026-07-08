@@ -7,5 +7,10 @@ WITHINGS_CLIENT_ID = os.getenv("WITHINGS_CLIENT_ID")
 WITHINGS_CLIENT_SECRET = os.getenv("WITHINGS_CLIENT_SECRET")
 WITHINGS_REDIRECT_URI = os.getenv("WITHINGS_REDIRECT_URI")
 
-XERT_USERNAME = "Yniky2002"
-XERT_PASSWORD = "yw7-Ado-MCg-5RW"
+XERT_USERNAME = os.getenv("XERT_USERNAME")
+XERT_PASSWORD = os.getenv("XERT_PASSWORD")
+
+APPLE_AUTOSYNC_FOLDER = os.getenv(
+    "APPLE_AUTOSYNC_FOLDER",
+    "/Users/nikhall/Library/Mobile Documents/iCloud~com~ifunography~HealthExport/Documents/AutoSync",
+)

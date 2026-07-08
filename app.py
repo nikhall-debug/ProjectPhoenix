@@ -17,7 +17,10 @@ from integrations.xert import (
     load_xert_status,
 )
 from snapshot import build_morning_snapshot
-from sync import sync_withings_once_per_session
+from sync import (
+    sync_withings_once_per_session,
+    sync_apple_health_autosync_once_per_session,
+)
 
 
 init_db()
@@ -50,8 +53,11 @@ if withings_code:
             st.query_params.clear()
 
 sync_withings_once_per_session(st)
+sync_apple_health_autosync_once_per_session(st)
 
 snapshot = build_morning_snapshot()
+apple_result = st.session_state.get("apple_health_autosync_result")
+apple_health_available = apple_result is not None and apple_result.get("files_seen", 0) > 0
 
 st.divider()
 st.header("🌅 Morning Snapshot")
@@ -74,6 +80,11 @@ with col1:
         st.success("☑ Body measurements")
     else:
         st.warning("☐ Body measurements")
+
+    if apple_health_available:
+        st.success("☑ Apple Health")
+    else:
+        st.warning("☐ Apple Health")
 
     if snapshot["today_checkin_done"]:
         st.success("☑ Morning check-in")
