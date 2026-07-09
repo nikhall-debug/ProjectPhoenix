@@ -259,5 +259,3 @@ with st.expander("🧠 Athlete Context (Developer)", expanded=False):
         "Training Load": context["xert_training_load"],
         "Target XSS": context["xert_target_xss"],
     })
-
-st.caption("Project Phoenix v0.9.2-alpha")

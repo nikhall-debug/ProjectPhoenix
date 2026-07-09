@@ -84,3 +84,6 @@ if info_items:
 
 if not insights:
     st.info("No major insights yet. Phoenix will add insights as more data builds up.")
+
+from version import PHOENIX_VERSION_LABEL
+st.caption(f"{PHOENIX_VERSION_LABEL} · Today’s snapshot: {snapshot['snapshot_percent']}% complete")

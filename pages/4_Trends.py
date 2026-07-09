@@ -133,3 +133,6 @@ with state_col2:
 
 with state_col3:
     st.metric("Soreness", latest_soreness)
+
+from version import PHOENIX_VERSION_LABEL
+st.caption(f"{PHOENIX_VERSION_LABEL} · Today’s snapshot: {snapshot['snapshot_percent']}% complete")

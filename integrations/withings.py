@@ -4,6 +4,7 @@ from pathlib import Path
 from datetime import datetime
 
 import requests
+import streamlit as st
 
 from config import (
     WITHINGS_CLIENT_ID,
@@ -59,6 +60,34 @@ def exchange_code_for_tokens(code):
     return response.json()
 
 
+def refresh_withings_tokens():
+    tokens = load_tokens()
+
+    if not token_response_is_valid(tokens):
+        return None
+
+    refresh_token = tokens["body"]["refresh_token"]
+
+    payload = {
+        "action": "requesttoken",
+        "grant_type": "refresh_token",
+        "client_id": WITHINGS_CLIENT_ID,
+        "client_secret": WITHINGS_CLIENT_SECRET,
+        "refresh_token": refresh_token,
+    }
+
+    response = requests.post(TOKEN_URL, data=payload, timeout=20)
+    response.raise_for_status()
+
+    new_tokens = response.json()
+
+    if token_response_is_valid(new_tokens):
+        save_tokens(new_tokens)
+        return new_tokens
+
+    return None
+
+
 def token_response_is_valid(token_response):
     return (
         isinstance(token_response, dict)
@@ -98,33 +127,33 @@ def normalize_withings_value(value, unit):
     return value * (10 ** unit)
 
 
-def get_withings_measurements(limit=100, startdate=None):
-    tokens = load_tokens()
-
-    if not token_response_is_valid(tokens):
-        return []
-
-    access_token = tokens["body"]["access_token"]
-
-    params = {
+def fetch_withings_measurements(access_token, limit=100, startdate=None):
+    payload = {
         "action": "getmeas",
-        "access_token": access_token,
         "category": 1,
         "limit": limit,
     }
 
     if startdate is not None:
-        params["startdate"] = startdate
+        payload["startdate"] = startdate
 
-    response = requests.get(
+    headers = {
+        "Authorization": f"Bearer {access_token}",
+        "Content-Type": "application/x-www-form-urlencoded",
+    }
+
+    response = requests.post(
         MEASURE_URL,
-        params=params,
+        data=payload,
+        headers=headers,
         timeout=20,
     )
 
     response.raise_for_status()
-    data = response.json()
+    return response.json()
 
+
+def parse_withings_measurements(data):
     measurements = []
 
     measure_groups = data.get("body", {}).get("measuregrps", [])
@@ -145,17 +174,60 @@ def get_withings_measurements(limit=100, startdate=None):
                 measure["unit"],
             )
 
-            measurements.append({
-                "source": "withings",
-                "metric_type": metric_type,
-                "value": value,
-                "unit": unit,
-                "measured_at": measured_at,
-                "raw_type": raw_type,
-                "raw_data": json.dumps(measure),
-            })
+            measurements.append(
+                {
+                    "source": "withings",
+                    "metric_type": metric_type,
+                    "value": value,
+                    "unit": unit,
+                    "measured_at": measured_at,
+                    "raw_type": raw_type,
+                    "raw_data": json.dumps(measure),
+                }
+            )
 
     return measurements
+
+
+def get_withings_measurements(limit=100, startdate=None):
+    tokens = load_tokens()
+
+    if not token_response_is_valid(tokens):
+        st.warning("Withings tokens are missing or invalid.")
+        return []
+
+    access_token = tokens["body"]["access_token"]
+
+    data = fetch_withings_measurements(
+        access_token=access_token,
+        limit=limit,
+        startdate=startdate,
+    )
+
+    if data.get("status") == 401:
+        st.warning("Withings access token expired. Refreshing token...")
+
+        refreshed_tokens = refresh_withings_tokens()
+
+        if not token_response_is_valid(refreshed_tokens):
+            st.error("Could not refresh Withings token. Please reconnect Withings.")
+            return []
+
+        access_token = refreshed_tokens["body"]["access_token"]
+
+        data = fetch_withings_measurements(
+            access_token=access_token,
+            limit=limit,
+            startdate=startdate,
+        )
+
+
+    if data.get("status") != 0:
+        st.error("Withings API returned an error.")
+        st.write(data)
+        return []
+
+    return parse_withings_measurements(data)
 
 
 def get_latest_weight():

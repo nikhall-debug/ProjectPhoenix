@@ -419,6 +419,45 @@ def get_latest_checkin():
         "notes": result[8],
     }
 
+def get_latest_measurement_time(source):
+    import sqlite3
+
+    conn = sqlite3.connect("phoenix.db")
+    cursor = conn.cursor()
+
+    cursor.execute(
+        """
+        SELECT MAX(measured_at)
+        FROM health_measurements
+        WHERE source = ?
+        """,
+        (source,),
+    )
+
+    result = cursor.fetchone()
+    conn.close()
+
+    if result is None or result[0] is None:
+        return None
+
+    return result[0]
+
+    cursor.execute(
+        """
+        SELECT MAX(measured_at)
+        FROM health_measurements
+        WHERE source = ?
+        """,
+        (source,),
+    )
+
+    result = cursor.fetchone()
+    conn.close()
+
+    if result is None or result[0] is None:
+        return None
+
+    return result[0][:10]
 
 def get_checkin_for_date(checkin_date):
     conn = sqlite3.connect(DB_FILE)
@@ -529,3 +568,37 @@ def get_latest_xert_status():
         return None
 
     return dict(zip(columns, result))
+
+def get_metric_values_for_date(metric_type, target_date):
+    conn = sqlite3.connect(DB_FILE)
+    cur = conn.cursor()
+
+    date_string = str(target_date)
+
+    cur.execute("""
+        SELECT
+            value,
+            unit,
+            measured_at,
+            source
+        FROM health_measurements
+        WHERE metric_type = ?
+          AND DATE(measured_at) = ?
+        ORDER BY measured_at ASC
+    """, (
+        metric_type,
+        date_string,
+    ))
+
+    rows = cur.fetchall()
+    conn.close()
+
+    return [
+        {
+            "value": row[0],
+            "unit": row[1],
+            "measured_at": row[2],
+            "source": row[3],
+        }
+        for row in rows
+    ]    

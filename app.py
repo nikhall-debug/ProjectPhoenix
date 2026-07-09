@@ -3,7 +3,13 @@ from datetime import date
 import streamlit as st
 
 from athlete_context import build_athlete_context
-from database import init_db, save_checkin, save_xert_status_record
+from database import (
+    init_db,
+    save_checkin,
+    save_xert_status_record,
+    get_latest_measurement_time,
+)
+from freshness import build_withings_freshness, build_apple_health_freshness
 from integrations.withings import (
     build_authorization_url,
     exchange_code_for_tokens,
@@ -23,6 +29,9 @@ from sync import (
     sync_withings_once_per_session,
     sync_apple_health_autosync_once_per_session,
 )
+from readiness_engine import build_readiness_profile
+from strain_engine import build_daily_strain
+from version import PHOENIX_VERSION_LABEL
 
 
 init_db()
@@ -53,13 +62,21 @@ sync_apple_health_autosync_once_per_session(st)
 snapshot = build_morning_snapshot()
 context = build_athlete_context()
 recovery_profile = build_recovery_profile(context)
+readiness_profile = build_readiness_profile(context, recovery_profile)
 
 baselines = context["baselines"]
 
 morning_brief = build_morning_brief(context, recovery_profile, baselines)
+daily_strain = build_daily_strain(readiness_profile)
 
 apple_result = st.session_state.get("apple_health_autosync_result")
 apple_health_available = apple_result is not None and apple_result.get("files_seen", 0) > 0
+
+withings_latest_time = get_latest_measurement_time("withings")
+withings_freshness = build_withings_freshness(withings_latest_time)
+
+apple_health_latest_time = get_latest_measurement_time("apple_health")
+apple_health_freshness = build_apple_health_freshness(apple_health_latest_time)
 
 st.title("🔥 Good morning, Nik")
 st.caption("Phoenix has collected what it can automatically. Here’s what it thinks about today.")
@@ -81,6 +98,21 @@ with col3:
 
 with col4:
     st.metric("Confidence", f"{morning_brief['confidence']}%")
+
+st.subheader("🔥 Capacity & Strain")
+
+strain_col1, strain_col2, strain_col3 = st.columns(3)
+
+with strain_col1:
+    st.metric("Today's Capacity", f'{daily_strain["capacity"]}/100')
+
+with strain_col2:
+    st.metric("Current Strain", f'{daily_strain["current_strain"]}/100')
+
+with strain_col3:
+    st.metric("Balance", daily_strain["balance_label"], daily_strain["remaining"])
+
+st.caption(daily_strain["balance_summary"])
 
 st.subheader("Today’s Summary")
 
@@ -104,6 +136,36 @@ else:
 col1, col2 = st.columns([3, 1])
 
 with col1:
+    st.subheader("Data freshness")
+
+    if withings_is_connected():
+        st.caption("Withings is connected.")
+
+        if withings_freshness["status"] == "current":
+            st.success(withings_freshness["message"])
+        elif withings_freshness["status"] == "stale":
+            st.warning(withings_freshness["message"])
+        else:
+            st.error(withings_freshness["message"])
+
+        if st.button("🔄 Sync Withings now"):
+            with st.spinner("Syncing Withings data..."):
+                sync_withings_once_per_session(st, force=True)
+            st.success("Withings sync complete.")
+            st.rerun()
+    else:
+        st.warning("Withings is not connected.")
+        st.link_button("Connect Withings", build_authorization_url())
+
+    if apple_health_freshness["status"] == "current":
+        st.success(apple_health_freshness["message"])
+    elif apple_health_freshness["status"] == "stale":
+        st.warning(apple_health_freshness["message"])
+    else:
+        st.error(apple_health_freshness["message"])
+
+    st.subheader("Snapshot checklist")
+
     if snapshot["body_measurements_available"]:
         st.success("☑ Body measurements")
     else:
@@ -127,10 +189,6 @@ with col1:
 with col2:
     st.metric("Snapshot", f"{snapshot['snapshot_percent']}%")
 
-if not withings_is_connected():
-    st.warning("Withings is not connected.")
-    st.link_button("Connect Withings", build_authorization_url())
-
 st.divider()
 
 st.header("✍️ Tell Phoenix what only you know")
@@ -141,7 +199,7 @@ form_col1, form_col2, form_col3 = st.columns(3)
 with form_col1:
     checkin_date = st.date_input("Date", date.today())
     lumen_score = st.selectbox("Morning Lumen score", [1, 2, 3, 4, 5], index=2)
-    fat_burn_percent = st.slider("Estimated Fat burning %", 0, 100, 65)
+    fat_burn_percent = st.slider("Estimated Fat burning %", 0, 100, 45)
 
 carb_burn_percent = 100 - fat_burn_percent
 st.caption(f"Estimated fuel mix: {fat_burn_percent}% fat / {carb_burn_percent}% carbs")
@@ -197,4 +255,4 @@ with st.expander("Developer tools"):
     st.subheader("Apple Health Sync")
     st.write(apple_result)
 
-st.caption(f"Project Phoenix v0.9.2-alpha · Today’s snapshot: {snapshot['snapshot_percent']}% complete")
+st.caption(f"{PHOENIX_VERSION_LABEL} · Today’s snapshot: {snapshot['snapshot_percent']}% complete")
