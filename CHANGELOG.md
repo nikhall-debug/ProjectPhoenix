@@ -23,6 +23,20 @@ Project Phoenix is a personal health intelligence platform designed to combine d
 
 ---
 
+## Phoenix v0.9.3-alpha
+
+### Reliability
+- Added centralized version management.
+- Restored manual Withings sync.
+- Added automatic Withings token refresh.
+- Added data freshness monitoring for Withings and Apple Health.
+- Dashboard now distinguishes between connection status and data freshness.
+- Added timestamps showing the last successful synchronization for supported integrations.
+
+### UX
+- Improved transparency around integration health.
+- Reduced the risk of stale data influencing daily coaching.
+
 ## v0.9.2 — Readiness Intelligence & Narrative Coaching
 
 ### Added

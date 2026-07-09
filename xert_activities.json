@@ -1,0 +1,1531 @@
+{
+  "success": true,
+  "activities": [
+    {
+      "name": "ROUVY - Cool Down - Sommatino to Riesi | Sicily",
+      "start_date": {
+        "date": "2026-06-23 17:22:33.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": null,
+      "path": "21vq71bscm6ouabd",
+      "activity_type": "Virtual Cycling",
+      "map_url": "https://www.xertonline.com/assets/images/user/18502/map_21vq71bscm6ouabd.png",
+      "distance": 0.00095,
+      "total_elevation_gain": 0
+    },
+    {
+      "name": "ROUVY - Race: EU Islands | Racing Series | Stage 9 | Race B",
+      "start_date": {
+        "date": "2026-06-23 17:00:00.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": null,
+      "path": "bnn9uahofehsn3yc",
+      "activity_type": "Virtual Cycling",
+      "map_url": "https://www.xertonline.com/assets/images/user/18502/map_bnn9uahofehsn3yc.png",
+      "distance": 14.00004,
+      "total_elevation_gain": 195
+    },
+    {
+      "name": "ROUVY - Warm Up - Sommatino to Riesi | Sicily",
+      "start_date": {
+        "date": "2026-06-23 16:57:45.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": null,
+      "path": "5x66dl6zn21krpqz",
+      "activity_type": "Virtual Cycling",
+      "map_url": "https://www.xertonline.com/assets/images/user/18502/map_5x66dl6zn21krpqz.png",
+      "distance": 0.003,
+      "total_elevation_gain": 0
+    },
+    {
+      "name": "ROUVY - Race: Swiss Peak Power",
+      "start_date": {
+        "date": "2026-06-23 16:00:00.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": null,
+      "path": "ejrdsxtz59icwxn4",
+      "activity_type": "Virtual Cycling",
+      "map_url": "https://www.xertonline.com/assets/images/user/18502/map_ejrdsxtz59icwxn4.png",
+      "distance": 16.27002,
+      "total_elevation_gain": 876
+    },
+    {
+      "name": "ROUVY - Warm Up - Tour de Suisse 2026 | Stage 5 - Villars",
+      "start_date": {
+        "date": "2026-06-23 15:58:04.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": null,
+      "path": "mbinmlihanyfo1ya",
+      "activity_type": "Virtual Cycling",
+      "map_url": "https://www.xertonline.com/assets/images/user/18502/map_mbinmlihanyfo1ya.png",
+      "distance": 0.79607,
+      "total_elevation_gain": 0
+    },
+    {
+      "name": "ROUVY - Seccagrande to Porto Empedocle | Sicily",
+      "start_date": {
+        "date": "2026-06-23 15:51:20.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": null,
+      "path": "asurd6w6wvfnkp3q",
+      "activity_type": "Virtual Cycling",
+      "map_url": "https://www.xertonline.com/assets/images/user/18502/map_asurd6w6wvfnkp3q.png",
+      "distance": 2.22458,
+      "total_elevation_gain": 9
+    },
+    {
+      "name": "ROUVY - Route through Peyrano - Argentina",
+      "start_date": {
+        "date": "2026-06-22 13:36:57.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": null,
+      "path": "hv38oz4awowudnhe",
+      "activity_type": "Virtual Cycling",
+      "map_url": "https://www.xertonline.com/assets/images/user/18502/map_hv38oz4awowudnhe.png",
+      "distance": 1.28225,
+      "total_elevation_gain": 0
+    },
+    {
+      "name": "ROUVY - Route through Peyrano - Argentina",
+      "start_date": {
+        "date": "2026-06-22 13:17:59.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": null,
+      "path": "11uxyxkhn6zqjd3t",
+      "activity_type": "Virtual Cycling",
+      "map_url": "https://www.xertonline.com/assets/images/user/18502/map_11uxyxkhn6zqjd3t.png",
+      "distance": 10.847280000000001,
+      "total_elevation_gain": 16
+    },
+    {
+      "name": "ROUVY - Sommatino to Riesi | Sicily",
+      "start_date": {
+        "date": "2026-06-22 12:47:55.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": null,
+      "path": "ommmxq0xadlwa5fp",
+      "activity_type": "Virtual Cycling",
+      "map_url": "https://www.xertonline.com/assets/images/user/18502/map_ommmxq0xadlwa5fp.png",
+      "distance": 14.00028,
+      "total_elevation_gain": 195
+    },
+    {
+      "name": "ROUVY - 7 Minute Cool-down",
+      "start_date": {
+        "date": "2026-06-21 10:25:12.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": null,
+      "path": "fmzri9l2xkher7af",
+      "activity_type": "Virtual Cycling",
+      "map_url": "https://www.xertonline.com/assets/images/user/18502/map_fmzri9l2xkher7af.png",
+      "distance": 2.8574499999999996,
+      "total_elevation_gain": 20
+    },
+    {
+      "name": "ROUVY - Cool Down - Riposto to Nicolosi Nord | Sicily",
+      "start_date": {
+        "date": "2026-06-21 10:20:30.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": null,
+      "path": "v03lsxc9baohgrqv",
+      "activity_type": "Virtual Cycling",
+      "map_url": "https://www.xertonline.com/assets/images/user/18502/map_v03lsxc9baohgrqv.png",
+      "distance": 0,
+      "total_elevation_gain": 0
+    },
+    {
+      "name": "ROUVY - Race: MUCKERS SUNDAY AM HILL CLIMB. Riposto to Nicolosi Nord | Sicily",
+      "start_date": {
+        "date": "2026-06-21 08:15:00.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": null,
+      "path": "hbrnlb10xfrjr5ws",
+      "activity_type": "Virtual Cycling",
+      "map_url": "https://www.xertonline.com/assets/images/user/18502/map_hbrnlb10xfrjr5ws.png",
+      "distance": 35.46154,
+      "total_elevation_gain": 1923
+    },
+    {
+      "name": "ROUVY - Warm Up - Riposto to Nicolosi Nord | Sicily",
+      "start_date": {
+        "date": "2026-06-21 08:08:48.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": null,
+      "path": "4akl1swhr2bgyjz0",
+      "activity_type": "Virtual Cycling",
+      "map_url": "https://www.xertonline.com/assets/images/user/18502/map_4akl1swhr2bgyjz0.png",
+      "distance": 0.79449,
+      "total_elevation_gain": 0
+    },
+    {
+      "name": "ROUVY - Cheddar Gorge | Babble Ride Across Britain",
+      "start_date": {
+        "date": "2026-06-21 07:56:10.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": null,
+      "path": "ipkzce4n8cx6igee",
+      "activity_type": "Virtual Cycling",
+      "map_url": "https://www.xertonline.com/assets/images/user/18502/map_ipkzce4n8cx6igee.png",
+      "distance": 5.64634,
+      "total_elevation_gain": 28
+    },
+    {
+      "name": "ROUVY - T\u00e4sch | Switzerland",
+      "start_date": {
+        "date": "2026-06-19 13:53:24.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": null,
+      "path": "7gy4ccm3281aywcu",
+      "activity_type": "Virtual Cycling",
+      "map_url": "https://www.xertonline.com/assets/images/user/18502/map_7gy4ccm3281aywcu.png",
+      "distance": 18.81952,
+      "total_elevation_gain": 336
+    },
+    {
+      "name": "Moderate Polar Climber Ride",
+      "start_date": {
+        "date": "2026-06-18 14:56:07.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": null,
+      "path": "xdj5hgemenam64i9",
+      "activity_type": "Virtual Cycling",
+      "map_url": "https://www.xertonline.com/assets/images/user/18502/map_xdj5hgemenam64i9.png",
+      "distance": 156.80533,
+      "total_elevation_gain": 3047.7999999999975
+    },
+    {
+      "name": "SUF Attackerish",
+      "start_date": {
+        "date": "2026-06-16 15:39:08.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": null,
+      "path": "luedunhcozyyty0l",
+      "activity_type": "Virtual Cycling",
+      "map_url": "https://www.xertonline.com/assets/images/user/18502/map_luedunhcozyyty0l.png",
+      "distance": 83.5818,
+      "total_elevation_gain": 4011.5999999999985
+    },
+    {
+      "name": "ROUVY - Race: Ironman TT Race",
+      "start_date": {
+        "date": "2026-06-15 15:00:26.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": null,
+      "path": "rtylje32xvzhjyc9",
+      "activity_type": "Virtual Cycling",
+      "map_url": "https://www.xertonline.com/assets/images/user/18502/map_rtylje32xvzhjyc9.png",
+      "distance": 40.05,
+      "total_elevation_gain": 185
+    },
+    {
+      "name": "ROUVY - Messina to Capo Peloro | Sicily",
+      "start_date": {
+        "date": "2026-06-15 14:38:16.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": null,
+      "path": "di4st1uumdsifyeq",
+      "activity_type": "Virtual Cycling",
+      "map_url": "https://www.xertonline.com/assets/images/user/18502/map_di4st1uumdsifyeq.png",
+      "distance": 13.400319999999999,
+      "total_elevation_gain": 17
+    },
+    {
+      "name": "Routine A \u2014 Foundation Hinge + Push",
+      "start_date": {
+        "date": "2026-06-15 08:24:00.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": "Logged with hevyapp.com\n\nRomanian Deadlift (Dumbbell)\nSet 1: 25 kg x 8 \nSet 2: 25 kg x 8 \nSet 3: 25 kg x 8 \nSet 4: 25 kg x 8 \n\nGoblet Squat\nSet 1: 16 kg x 10 \nSet 2: 16 kg x 10 \nSet 3: 16 kg x 10 \nSet 4: 16 kg x 10 \n\nDumbbell Row\nSet 1: 10 kg x 12 \nSet 2: 10 kg x 12 \nSet 3: 10 kg x 12 \n\nShoulder Press (Dumbbell)\nSet 1: 10 kg x 8 \nSet 2: 10 kg x 8 \nSet 3: 10 kg x 8 \n\nPlank\nSet 1: 1min 0s\nSet 2: 1min 0s\n",
+      "path": "b3eclxbfo3rhzp4h",
+      "activity_type": "WeightTraining",
+      "map_url": false,
+      "distance": 0,
+      "total_elevation_gain": 0
+    },
+    {
+      "name": "Weeks 3-4 \u2022 Session B",
+      "start_date": {
+        "date": "2026-06-15 07:56:51.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": "Logged with hevyapp.com\n\nTriceps Rope Pushdown\nSet 1: 10 kg x 15 \nSet 2: 10 kg x 15 \nSet 3: 10 kg x 10 \n\nBicep Curl (Dumbbell)\nSet 1: 10 kg x 15 \nSet 2: 10 kg x 15 \nSet 3: 10 kg x 15 \n\nPush Up\nSet 1: 10 reps \nSet 2: 10 reps \nSet 3: 10 reps \n\nLateral Raise (Dumbbell)\nSet 1: 10 kg x 8 \nSet 2: 10 kg x 8 \n\nDumbbell Row\nSet 1: 10 kg x 10 \nSet 2: 10 kg x 10 \nSet 3: 10 kg x 12 \n",
+      "path": "dre13dyv4w1n9m9t",
+      "activity_type": "WeightTraining",
+      "map_url": false,
+      "distance": 0,
+      "total_elevation_gain": 0
+    },
+    {
+      "name": "ROUVY - Race: MUCKERS SUNDAY AM HILL CLIMB. FFP Cerro Castillo - Camino Las Ardillas",
+      "start_date": {
+        "date": "2026-06-14 08:15:00.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": null,
+      "path": "3o0krnlohw2pkljs",
+      "activity_type": "Virtual Cycling",
+      "map_url": "https://www.xertonline.com/assets/images/user/18502/map_3o0krnlohw2pkljs.png",
+      "distance": 33.500699999999995,
+      "total_elevation_gain": 802
+    },
+    {
+      "name": "ROUVY - Warm Up - FFP Cerro Castillo - Camino Las Ardillas",
+      "start_date": {
+        "date": "2026-06-14 08:12:51.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": null,
+      "path": "fh1yxywwgkkpjtcs",
+      "activity_type": "Virtual Cycling",
+      "map_url": "https://www.xertonline.com/assets/images/user/18502/map_fh1yxywwgkkpjtcs.png",
+      "distance": 0.01177,
+      "total_elevation_gain": 0
+    },
+    {
+      "name": "ROUVY - Giro d'Italia 2026 | Stage 6 - Salerno",
+      "start_date": {
+        "date": "2026-06-14 07:50:33.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": null,
+      "path": "5ahzjpxqzka3b9cs",
+      "activity_type": "Virtual Cycling",
+      "map_url": "https://www.xertonline.com/assets/images/user/18502/map_5ahzjpxqzka3b9cs.png",
+      "distance": 9.502790000000001,
+      "total_elevation_gain": 18
+    },
+    {
+      "name": "ROUVY - 7 Minute Cool-down",
+      "start_date": {
+        "date": "2026-06-11 16:19:38.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": null,
+      "path": "bknbhfgsgnacxphu",
+      "activity_type": "Virtual Cycling",
+      "map_url": "https://www.xertonline.com/assets/images/user/18502/map_bknbhfgsgnacxphu.png",
+      "distance": 3.8688200000000004,
+      "total_elevation_gain": 35
+    },
+    {
+      "name": "ROUVY - Cool Down - Giro d'Italia 2025 | Stage 21 - Roma",
+      "start_date": {
+        "date": "2026-06-11 16:12:21.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": null,
+      "path": "c21uozzy7jizpwzb",
+      "activity_type": "Virtual Cycling",
+      "map_url": "https://www.xertonline.com/assets/images/user/18502/map_c21uozzy7jizpwzb.png",
+      "distance": 0,
+      "total_elevation_gain": 0
+    },
+    {
+      "name": "ROUVY - Race: Giro d'Italia | Racing Series | Stage 6 | Race H",
+      "start_date": {
+        "date": "2026-06-11 15:59:59.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": null,
+      "path": "hdicr3j5tecovtgz",
+      "activity_type": "Virtual Cycling",
+      "map_url": "https://www.xertonline.com/assets/images/user/18502/map_hdicr3j5tecovtgz.png",
+      "distance": 9.5271,
+      "total_elevation_gain": 58
+    },
+    {
+      "name": "ROUVY - Warm Up - Giro d'Italia 2025 | Stage 21 - Roma",
+      "start_date": {
+        "date": "2026-06-11 15:44:04.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": null,
+      "path": "nglez4xdm0xphwmu",
+      "activity_type": "Virtual Cycling",
+      "map_url": "https://www.xertonline.com/assets/images/user/18502/map_nglez4xdm0xphwmu.png",
+      "distance": 1.12578,
+      "total_elevation_gain": 18
+    },
+    {
+      "name": "ROUVY - Race: Swiss Peak Power",
+      "start_date": {
+        "date": "2026-06-11 14:59:59.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": null,
+      "path": "m7ulhqsaxeng9gxf",
+      "activity_type": "Virtual Cycling",
+      "map_url": "https://www.xertonline.com/assets/images/user/18502/map_m7ulhqsaxeng9gxf.png",
+      "distance": 23.4622,
+      "total_elevation_gain": 157
+    },
+    {
+      "name": "ROUVY - Warm Up - Tour de Suisse 2026 | Stage 4 - Aarburg",
+      "start_date": {
+        "date": "2026-06-11 14:54:04.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": null,
+      "path": "8tlnzxotdihmsnp7",
+      "activity_type": "Virtual Cycling",
+      "map_url": "https://www.xertonline.com/assets/images/user/18502/map_8tlnzxotdihmsnp7.png",
+      "distance": 1.53081,
+      "total_elevation_gain": 12
+    },
+    {
+      "name": "Routine C \u2014 Athletic Durability",
+      "start_date": {
+        "date": "2026-06-10 13:59:05.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": "Logged with hevyapp.com\n\nKettlebell Goblet Squat\nSet 1: 16 kg x 10 \nSet 2: 16 kg x 10 \nSet 3: 16 kg x 10 \n\nRomanian Deadlift (Dumbbell)\nSet 1: 25 kg x 10 \nSet 2: 25 kg x 10 \n\nSeated Row (Machine)\nSet 1: 15 kg x 10 \nSet 2: 15 kg x 10 \nSet 3: 15 kg x 10 \n\nOverhead Press (Dumbbell)\nSet 1: 6 kg x 8 \nSet 2: 6 kg x 8 \n\nCable Twist (Down to up)\nSet 1: 5 kg x 10 \nSet 2: 5 kg x 10 \nSet 3: 5 kg x 10 \n",
+      "path": "v86isiewbcjycwun",
+      "activity_type": "WeightTraining",
+      "map_url": false,
+      "distance": 0,
+      "total_elevation_gain": 0
+    },
+    {
+      "name": "Weeks 1-2 \u2022 Session A- shoulder rehab",
+      "start_date": {
+        "date": "2026-06-10 13:42:22.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": "Logged with hevyapp.com\n\nSeated Row (Machine)\nSet 1: 10 kg x 12 \nSet 2: 10 kg x 12 \n\nPreacher Curl (Dumbbell)\nSet 1: 10 kg x 15 \nSet 2: 10 kg x 15 \nSet 3: 10 kg x 15 \n\nTriceps Rope Pushdown\nSet 1: 10 kg x 12 \nSet 2: 10 kg x 12 \n\nPush Up\nSet 1: 12 reps \nSet 2: 10 reps \n",
+      "path": "ihgwceoexda8dfa5",
+      "activity_type": "WeightTraining",
+      "map_url": false,
+      "distance": 0,
+      "total_elevation_gain": 0
+    },
+    {
+      "name": "ROUVY - Group Ride: Rouvy Tuesday 1.5 to 2.5 w/kg",
+      "start_date": {
+        "date": "2026-06-09 16:21:09.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": null,
+      "path": "xagkqj7hrtgkccsh",
+      "activity_type": "Virtual Cycling",
+      "map_url": "https://www.xertonline.com/assets/images/user/18502/map_xagkqj7hrtgkccsh.png",
+      "distance": 14.20889,
+      "total_elevation_gain": 69
+    },
+    {
+      "name": "ROUVY - Group Ride: Rouvy Tuesday 1.5 to 2.5 w/kg",
+      "start_date": {
+        "date": "2026-06-09 16:16:44.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": null,
+      "path": "ycjojzjybvh6njb8",
+      "activity_type": "Virtual Cycling",
+      "map_url": "https://www.xertonline.com/assets/images/user/18502/map_ycjojzjybvh6njb8.png",
+      "distance": 0,
+      "total_elevation_gain": 0
+    },
+    {
+      "name": "ROUVY - Cool Down - Giro d'Italia 2025 | Stage 21 - Roma",
+      "start_date": {
+        "date": "2026-06-09 16:12:39.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": null,
+      "path": "lr6b65rmhv29ij0k",
+      "activity_type": "Virtual Cycling",
+      "map_url": "https://www.xertonline.com/assets/images/user/18502/map_lr6b65rmhv29ij0k.png",
+      "distance": 0.00148,
+      "total_elevation_gain": 0
+    },
+    {
+      "name": "ROUVY - Race: Giro d'Italia | Racing Series | Stage 6 | Race B",
+      "start_date": {
+        "date": "2026-06-09 16:00:00.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": null,
+      "path": "7c3zefg0zadwj6rz",
+      "activity_type": "Virtual Cycling",
+      "map_url": "https://www.xertonline.com/assets/images/user/18502/map_7c3zefg0zadwj6rz.png",
+      "distance": 9.52705,
+      "total_elevation_gain": 58
+    },
+    {
+      "name": "ROUVY - Warm Up - Giro d'Italia 2025 | Stage 21 - Roma",
+      "start_date": {
+        "date": "2026-06-09 15:53:27.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": null,
+      "path": "huufnkrb9slj5ow1",
+      "activity_type": "Virtual Cycling",
+      "map_url": "https://www.xertonline.com/assets/images/user/18502/map_huufnkrb9slj5ow1.png",
+      "distance": 0.68941,
+      "total_elevation_gain": 2
+    },
+    {
+      "name": "ROUVY - Giro d'Italia 2026 | Stage 6 - Salerno",
+      "start_date": {
+        "date": "2026-06-09 15:26:09.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": null,
+      "path": "8jq7ntuimiwfwzvv",
+      "activity_type": "Virtual Cycling",
+      "map_url": "https://www.xertonline.com/assets/images/user/18502/map_8jq7ntuimiwfwzvv.png",
+      "distance": 14.76787,
+      "total_elevation_gain": 24
+    },
+    {
+      "name": "ROUVY - Patti to San Carra | Sicily",
+      "start_date": {
+        "date": "2026-06-08 12:18:17.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": null,
+      "path": "ekjzu1yjen1ac5sj",
+      "activity_type": "Virtual Cycling",
+      "map_url": "https://www.xertonline.com/assets/images/user/18502/map_ekjzu1yjen1ac5sj.png",
+      "distance": 20.00006,
+      "total_elevation_gain": 210
+    },
+    {
+      "name": "Routine B \u2014 Stability + Pull",
+      "start_date": {
+        "date": "2026-06-08 10:43:41.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": "Logged with hevyapp.com\n\nLunge (Dumbbell)\nSet 1: 10 kg x 8 \nSet 2: 10 kg x 8 \nSet 3: 10 kg x 8 \n\nDeadlift (Barbell)\nSet 1: 30 kg x 10 \nSet 2: 30 kg x 10 \nSet 3: 30 kg x 10 \nSet 4: 30 kg x 10 \n\nLat Pulldown (Cable)\nSet 1: 20 kg x 10 \nSet 2: 20 kg x 10 \nSet 3: 20 kg x 10 \n\nChest Fly (Machine)\nSet 1: 10 kg x 10 \nSet 2: 10 kg x 10 \nSet 3: 10 kg x 10 \n\nStanding Calf Raise\nSet 1: 15 reps \nSet 2: 15 reps \n",
+      "path": "d6t1gg7jocapb76x",
+      "activity_type": "WeightTraining",
+      "map_url": false,
+      "distance": 0,
+      "total_elevation_gain": 0
+    },
+    {
+      "name": "Weeks 1-2 \u2022 Session A- shoulder rehab",
+      "start_date": {
+        "date": "2026-06-08 10:27:28.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": "Logged with hevyapp.com\n\nSeated Row (Machine)\nSet 1: 10 kg x 12 \nSet 2: 10 kg x 12 \n\nPreacher Curl (Dumbbell)\nSet 1: 10 kg x 15 \nSet 2: 10 kg x 15 \nSet 3: 10 kg x 15 \n\nTriceps Rope Pushdown\nSet 1: 5 kg x 12 \nSet 2: 5 kg x 12 \n\nPush Up\nSet 1: 12 reps \nSet 2: 12 reps \n",
+      "path": "zucfgbro0o8pdnkl",
+      "activity_type": "WeightTraining",
+      "map_url": false,
+      "distance": 0,
+      "total_elevation_gain": 0
+    },
+    {
+      "name": "ROUVY - 10 Minute Cooldown",
+      "start_date": {
+        "date": "2026-06-07 10:51:39.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": null,
+      "path": "rf9nxgmod8stj3nr",
+      "activity_type": "Virtual Cycling",
+      "map_url": "https://www.xertonline.com/assets/images/user/18502/map_rf9nxgmod8stj3nr.png",
+      "distance": 6.07822,
+      "total_elevation_gain": 19
+    },
+    {
+      "name": "ROUVY - Race: MUCKERS SUNDAY AM HILL CLIMB 2 OF 2. Giro d'Italia 2026 | Stage 19 - Passo Staulanza",
+      "start_date": {
+        "date": "2026-06-07 09:45:00.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": null,
+      "path": "s3mix4zzoejknixx",
+      "activity_type": "Virtual Cycling",
+      "map_url": "https://www.xertonline.com/assets/images/user/18502/map_s3mix4zzoejknixx.png",
+      "distance": 22.95523,
+      "total_elevation_gain": 983
+    },
+    {
+      "name": "ROUVY - Warm Up - Giro d'Italia 2026 | Stage 19 - Passo Staulanza",
+      "start_date": {
+        "date": "2026-06-07 09:30:48.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": null,
+      "path": "05bnqmrfp6afcnqr",
+      "activity_type": "Virtual Cycling",
+      "map_url": "https://www.xertonline.com/assets/images/user/18502/map_05bnqmrfp6afcnqr.png",
+      "distance": 1.05156,
+      "total_elevation_gain": 0
+    },
+    {
+      "name": "ROUVY - Race: MUCKERS SUNDAY AM HILL CLIMB 1 OF 2. Passo Giau",
+      "start_date": {
+        "date": "2026-06-07 08:15:00.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": null,
+      "path": "8vt1hfvpdnnoy3q0",
+      "activity_type": "Virtual Cycling",
+      "map_url": "https://www.xertonline.com/assets/images/user/18502/map_8vt1hfvpdnnoy3q0.png",
+      "distance": 12.70408,
+      "total_elevation_gain": 1095
+    },
+    {
+      "name": "ROUVY - Warm Up - Passo Giau | Italy",
+      "start_date": {
+        "date": "2026-06-07 08:10:34.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": null,
+      "path": "1b43pm3ojebnqyku",
+      "activity_type": "Virtual Cycling",
+      "map_url": "https://www.xertonline.com/assets/images/user/18502/map_1b43pm3ojebnqyku.png",
+      "distance": 0.06959,
+      "total_elevation_gain": 3
+    },
+    {
+      "name": "ROUVY - Giro d'Italia 2026 | Stage 6 - Salerno",
+      "start_date": {
+        "date": "2026-06-07 07:57:36.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": null,
+      "path": "a8qqpwjiljricfv7",
+      "activity_type": "Virtual Cycling",
+      "map_url": "https://www.xertonline.com/assets/images/user/18502/map_a8qqpwjiljricfv7.png",
+      "distance": 5.574520000000001,
+      "total_elevation_gain": 8
+    },
+    {
+      "name": "ROUVY - Race: Giro d'Italia | Racing Series | Stage 5 | Race J",
+      "start_date": {
+        "date": "2026-06-06 10:00:00.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": null,
+      "path": "svdmgdpcplzeamqc",
+      "activity_type": "Virtual Cycling",
+      "map_url": "https://www.xertonline.com/assets/images/user/18502/map_svdmgdpcplzeamqc.png",
+      "distance": 30.78841,
+      "total_elevation_gain": 32
+    },
+    {
+      "name": "ROUVY - Warm Up - Giro d'Italia 2026 | Stage 10 - Massa",
+      "start_date": {
+        "date": "2026-06-06 09:56:09.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": null,
+      "path": "2ivng1aqqcobguzb",
+      "activity_type": "Virtual Cycling",
+      "map_url": "https://www.xertonline.com/assets/images/user/18502/map_2ivng1aqqcobguzb.png",
+      "distance": 1.26058,
+      "total_elevation_gain": 1
+    },
+    {
+      "name": "ROUVY - Spi\u0161 Castle | Slovakia",
+      "start_date": {
+        "date": "2026-06-06 09:50:19.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": null,
+      "path": "mkdsxgelnulr61gc",
+      "activity_type": "Virtual Cycling",
+      "map_url": "https://www.xertonline.com/assets/images/user/18502/map_mkdsxgelnulr61gc.png",
+      "distance": 3.71874,
+      "total_elevation_gain": 4
+    },
+    {
+      "name": "ROUVY - 7 Minute Cool-down",
+      "start_date": {
+        "date": "2026-06-05 15:59:23.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": null,
+      "path": "xqarhda1qhadaneb",
+      "activity_type": "Virtual Cycling",
+      "map_url": "https://www.xertonline.com/assets/images/user/18502/map_xqarhda1qhadaneb.png",
+      "distance": 3.8843,
+      "total_elevation_gain": 36
+    },
+    {
+      "name": "ROUVY - Santo Stefano to Sant Ambrogio | Sicily",
+      "start_date": {
+        "date": "2026-06-05 15:19:19.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": null,
+      "path": "jcjjq80yideburws",
+      "activity_type": "Virtual Cycling",
+      "map_url": "https://www.xertonline.com/assets/images/user/18502/map_jcjjq80yideburws.png",
+      "distance": 24.831599999999998,
+      "total_elevation_gain": 156
+    },
+    {
+      "name": "ROUVY - Castelo Branco | Azores",
+      "start_date": {
+        "date": "2026-06-05 14:43:30.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": null,
+      "path": "nwovh5zunmonpzt9",
+      "activity_type": "Virtual Cycling",
+      "map_url": "https://www.xertonline.com/assets/images/user/18502/map_nwovh5zunmonpzt9.png",
+      "distance": 12.95075,
+      "total_elevation_gain": 323
+    },
+    {
+      "name": "Routine A \u2014 Foundation Hinge + Push",
+      "start_date": {
+        "date": "2026-06-05 09:36:42.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": "Logged with hevyapp.com\n\nRomanian Deadlift (Dumbbell)\nSet 1: 20 kg x 8 \nSet 2: 20 kg x 8 \nSet 3: 20 kg x 8 \n\nGoblet Squat\nSet 1: 16 kg x 10 \nSet 2: 16 kg x 10 \nSet 3: 16 kg x 10 \n\nDumbbell Row\nSet 1: 10 kg x 10 \nSet 2: 10 kg x 10 \nSet 3: 10 kg x 10 \n\nShoulder Press (Dumbbell)\nSet 1: 10 kg x 8 \nSet 2: 10 kg x 8 \n\nPlank\nSet 1: 1min 0s\nSet 2: 1min 0s\n",
+      "path": "x3efjtp7qqfffg8d",
+      "activity_type": "WeightTraining",
+      "map_url": false,
+      "distance": 0,
+      "total_elevation_gain": 0
+    },
+    {
+      "name": "Weeks 1-2 \u2022 Session A- shoulder rehab",
+      "start_date": {
+        "date": "2026-06-05 09:18:39.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": "Logged with hevyapp.com\n\nSeated Row (Machine)\nSet 1: 10 kg x 12 \nSet 2: 10 kg x 12 \n\nPreacher Curl (Dumbbell)\nSet 1: 10 kg x 15 \nSet 2: 10 kg x 15 \nSet 3: 10 kg x 15 \n\nTriceps Rope Pushdown\nSet 1: 5 kg x 12 \nSet 2: 5 kg x 12 \n\nPush Up\nSet 1: 12 reps \nSet 2: 8 reps \n",
+      "path": "cf6lfpoohih6k25h",
+      "activity_type": "WeightTraining",
+      "map_url": false,
+      "distance": 0,
+      "total_elevation_gain": 0
+    },
+    {
+      "name": "ROUVY - Race: Giro d'Italia | Racing Series | Stage 5 | Race H",
+      "start_date": {
+        "date": "2026-06-04 16:43:38.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": null,
+      "path": "f0eeze3hejorvn8x",
+      "activity_type": "Virtual Cycling",
+      "map_url": "https://www.xertonline.com/assets/images/user/18502/map_f0eeze3hejorvn8x.png",
+      "distance": 0.1915,
+      "total_elevation_gain": 0
+    },
+    {
+      "name": "ROUVY - Race: Giro d'Italia | Racing Series | Stage 5 | Race H",
+      "start_date": {
+        "date": "2026-06-04 16:00:00.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": null,
+      "path": "dsaq0wyhqpyqkmbc",
+      "activity_type": "Virtual Cycling",
+      "map_url": "https://www.xertonline.com/assets/images/user/18502/map_dsaq0wyhqpyqkmbc.png",
+      "distance": 30.70529,
+      "total_elevation_gain": 32
+    },
+    {
+      "name": "ROUVY - Warm Up - Giro d'Italia 2026 | Stage 10 - Massa",
+      "start_date": {
+        "date": "2026-06-04 15:55:20.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": null,
+      "path": "h3fcarpwx9hfutm3",
+      "activity_type": "Virtual Cycling",
+      "map_url": "https://www.xertonline.com/assets/images/user/18502/map_h3fcarpwx9hfutm3.png",
+      "distance": 0.7167100000000001,
+      "total_elevation_gain": 1
+    },
+    {
+      "name": "ROUVY - Warm Up - Giro d'Italia 2026 | Stage 10 - Massa",
+      "start_date": {
+        "date": "2026-06-04 15:53:55.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": null,
+      "path": "slki5wmatvfnkrkp",
+      "activity_type": "Virtual Cycling",
+      "map_url": "https://www.xertonline.com/assets/images/user/18502/map_slki5wmatvfnkrkp.png",
+      "distance": 0,
+      "total_elevation_gain": 0
+    },
+    {
+      "name": "ROUVY - Giro 2025 Stage 10 | Lucca - Pisa ",
+      "start_date": {
+        "date": "2026-06-04 15:40:15.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": null,
+      "path": "wzksfyh4cgh6bioc",
+      "activity_type": "Virtual Cycling",
+      "map_url": "https://www.xertonline.com/assets/images/user/18502/map_wzksfyh4cgh6bioc.png",
+      "distance": 6.2476,
+      "total_elevation_gain": 24
+    },
+    {
+      "name": "ROUVY - 7 Minute Cool-down",
+      "start_date": {
+        "date": "2026-06-02 17:04:11.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": null,
+      "path": "5iz9jeujop7lzn16",
+      "activity_type": "Virtual Cycling",
+      "map_url": "https://www.xertonline.com/assets/images/user/18502/map_5iz9jeujop7lzn16.png",
+      "distance": 0.19208,
+      "total_elevation_gain": 0
+    },
+    {
+      "name": "ROUVY - Cool Down - Giro d'Italia 2026 | Stage 10 - Massa",
+      "start_date": {
+        "date": "2026-06-02 16:58:43.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": null,
+      "path": "cy1rfcx8cpydjq6w",
+      "activity_type": "Virtual Cycling",
+      "map_url": "https://www.xertonline.com/assets/images/user/18502/map_cy1rfcx8cpydjq6w.png",
+      "distance": 0.07698,
+      "total_elevation_gain": 0
+    },
+    {
+      "name": "ROUVY - Race: Giro d'Italia | Racing Series | Stage 5 | Race B",
+      "start_date": {
+        "date": "2026-06-02 16:00:32.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": null,
+      "path": "mxumtnerznovcewv",
+      "activity_type": "Virtual Cycling",
+      "map_url": "https://www.xertonline.com/assets/images/user/18502/map_mxumtnerznovcewv.png",
+      "distance": 40.8152,
+      "total_elevation_gain": 60
+    },
+    {
+      "name": "ROUVY - IRONMAN 70.3 Venice-Jesolo 2025",
+      "start_date": {
+        "date": "2026-06-02 15:45:43.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": null,
+      "path": "yofgkzgdjmzpdz3e",
+      "activity_type": "Virtual Cycling",
+      "map_url": "https://www.xertonline.com/assets/images/user/18502/map_yofgkzgdjmzpdz3e.png",
+      "distance": 4.30658,
+      "total_elevation_gain": 9
+    },
+    {
+      "name": "Routine C \u2014 Athletic Durability",
+      "start_date": {
+        "date": "2026-06-01 10:49:08.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": "Logged with hevyapp.com\n\nKettlebell Goblet Squat\nSet 1: 16 kg x 10 \nSet 2: 16 kg x 10 \nSet 3: 16 kg x 10 \n\nRomanian Deadlift (Dumbbell)\nSet 1: 20 kg x 10 \nSet 2: 20 kg x 10 \n\nSeated Row (Machine)\nSet 1: 10 kg x 10 \nSet 2: 10 kg x 10 \nSet 3: 10 kg x 10 \n\nOverhead Press (Dumbbell)\nSet 1: 6 kg x 8 \nSet 2: 6 kg x 8 \n\nCable Twist (Down to up)\nSet 1: 5 kg x 10 \nSet 2: 5 kg x 10 \nSet 3: 5 kg x 10 \n",
+      "path": "k8wmn3mmkd8rempd",
+      "activity_type": "WeightTraining",
+      "map_url": false,
+      "distance": 0,
+      "total_elevation_gain": 0
+    },
+    {
+      "name": "Weeks 1-2 \u2022 Session A- shoulder rehab",
+      "start_date": {
+        "date": "2026-06-01 10:32:21.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": "Logged with hevyapp.com\n\nSeated Row (Machine)\nSet 1: 10 kg x 12 \nSet 2: 10 kg x 12 \n\nPreacher Curl (Dumbbell)\nSet 1: 10 kg x 15 \nSet 2: 10 kg x 15 \nSet 3: 10 kg x 15 \n\nTriceps Rope Pushdown\nSet 1: 5 kg x 12 \nSet 2: 5 kg x 12 \n\nPush Up\nSet 1: 12 reps \nSet 2: 6 reps \n",
+      "path": "qcmc76ylldrm73py",
+      "activity_type": "WeightTraining",
+      "map_url": false,
+      "distance": 0,
+      "total_elevation_gain": 0
+    },
+    {
+      "name": "ROUVY - Cool Down - Passo Stelvio from Prato | Italy",
+      "start_date": {
+        "date": "2026-05-31 10:11:27.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": null,
+      "path": "mf1283khoxuyimno",
+      "activity_type": "Virtual Cycling",
+      "map_url": "https://www.xertonline.com/assets/images/user/18502/map_mf1283khoxuyimno.png",
+      "distance": 0.0044800000000000005,
+      "total_elevation_gain": 0
+    },
+    {
+      "name": "ROUVY - Race: MUCKERS SUNDAY AM HILL CLIMB. PASSO STELVIO FROM PRATO. (SPECIAL SELECTION)",
+      "start_date": {
+        "date": "2026-05-31 08:15:00.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": null,
+      "path": "nsjt09hlgbjmssxn",
+      "activity_type": "Virtual Cycling",
+      "map_url": "https://www.xertonline.com/assets/images/user/18502/map_nsjt09hlgbjmssxn.png",
+      "distance": 24.70024,
+      "total_elevation_gain": 1851
+    },
+    {
+      "name": "ROUVY - Warm Up - Passo Stelvio from Prato | Italy",
+      "start_date": {
+        "date": "2026-05-31 08:13:29.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": null,
+      "path": "n5mgrgmdmdxwyjym",
+      "activity_type": "Virtual Cycling",
+      "map_url": "https://www.xertonline.com/assets/images/user/18502/map_n5mgrgmdmdxwyjym.png",
+      "distance": 0.01102,
+      "total_elevation_gain": 0
+    },
+    {
+      "name": "ROUVY - Giro d'Italia 2025 | Stage 21 - Roma",
+      "start_date": {
+        "date": "2026-05-31 08:01:48.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": null,
+      "path": "ix4pgmlbseu89hzs",
+      "activity_type": "Virtual Cycling",
+      "map_url": "https://www.xertonline.com/assets/images/user/18502/map_ix4pgmlbseu89hzs.png",
+      "distance": 5.31442,
+      "total_elevation_gain": 34
+    },
+    {
+      "name": "ROUVY - Race: Challenge Kaiserwinkl-Walchsee Race Preparation Ride",
+      "start_date": {
+        "date": "2026-05-29 15:00:00.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": null,
+      "path": "5lipfxucw72gjxpn",
+      "activity_type": "Virtual Cycling",
+      "map_url": "https://www.xertonline.com/assets/images/user/18502/map_5lipfxucw72gjxpn.png",
+      "distance": 42.37615,
+      "total_elevation_gain": 598
+    },
+    {
+      "name": "ROUVY - Warm Up - Challenge Kaiserwinkl-Walchsee 42km | Austria ",
+      "start_date": {
+        "date": "2026-05-29 14:55:47.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": null,
+      "path": "u0zvpaa6yrcvkesb",
+      "activity_type": "Virtual Cycling",
+      "map_url": "https://www.xertonline.com/assets/images/user/18502/map_u0zvpaa6yrcvkesb.png",
+      "distance": 0.8139500000000001,
+      "total_elevation_gain": 3
+    },
+    {
+      "name": "ROUVY - IRONMAN Texas North American Championship",
+      "start_date": {
+        "date": "2026-05-29 14:43:06.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": null,
+      "path": "oxhp3hxeecshveau",
+      "activity_type": "Virtual Cycling",
+      "map_url": "https://www.xertonline.com/assets/images/user/18502/map_oxhp3hxeecshveau.png",
+      "distance": 4.66212,
+      "total_elevation_gain": 8
+    },
+    {
+      "name": "Weeks 1-2 \u2022 Session A- shoulder rehab",
+      "start_date": {
+        "date": "2026-05-29 10:18:38.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": "Logged with hevyapp.com\n\nSeated Row (Machine)\nSet 1: 10 kg x 12 \nSet 2: 10 kg x 12 \n\nPreacher Curl (Dumbbell)\nSet 1: 10 kg x 15 \nSet 2: 10 kg x 15 \nSet 3: 10 kg x 15 \n\nTriceps Rope Pushdown\nSet 1: 5 kg x 12 \nSet 2: 5 kg x 12 \n\nPush Up\nSet 1: 12 reps \nSet 2: 5 reps \n",
+      "path": "lbv60oseecn5vcgu",
+      "activity_type": "WeightTraining",
+      "map_url": false,
+      "distance": 0,
+      "total_elevation_gain": 0
+    },
+    {
+      "name": "ROUVY - 7 Minute Cool-down",
+      "start_date": {
+        "date": "2026-05-28 17:16:06.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": null,
+      "path": "cqsldwb0zv3h6r2w",
+      "activity_type": "Virtual Cycling",
+      "map_url": "https://www.xertonline.com/assets/images/user/18502/map_cqsldwb0zv3h6r2w.png",
+      "distance": 3.84058,
+      "total_elevation_gain": 34
+    },
+    {
+      "name": "ROUVY - Race: Giro d'Italia | Racing Series | Stage 4 | Race H",
+      "start_date": {
+        "date": "2026-05-28 16:00:00.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": null,
+      "path": "fw48sq8wdf1m0fbm",
+      "activity_type": "Virtual Cycling",
+      "map_url": "https://www.xertonline.com/assets/images/user/18502/map_fw48sq8wdf1m0fbm.png",
+      "distance": 33.41426,
+      "total_elevation_gain": 825
+    },
+    {
+      "name": "ROUVY - Warm Up - Giro d'Italia 2025 | Stage 17 - Bormio ",
+      "start_date": {
+        "date": "2026-05-28 15:56:57.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": null,
+      "path": "aja9n11ryb18pcc1",
+      "activity_type": "Virtual Cycling",
+      "map_url": "https://www.xertonline.com/assets/images/user/18502/map_aja9n11ryb18pcc1.png",
+      "distance": 0.08528,
+      "total_elevation_gain": 5
+    },
+    {
+      "name": "ROUVY - Messina to Capo Peloro | Sicily",
+      "start_date": {
+        "date": "2026-05-28 15:47:05.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": null,
+      "path": "bqdeaiz6mxwsuz4z",
+      "activity_type": "Virtual Cycling",
+      "map_url": "https://www.xertonline.com/assets/images/user/18502/map_bqdeaiz6mxwsuz4z.png",
+      "distance": 4.4321,
+      "total_elevation_gain": 2
+    },
+    {
+      "name": "Routine B \u2014 Stability + Pull",
+      "start_date": {
+        "date": "2026-05-27 09:44:21.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": "Logged with hevyapp.com\n\nLunge (Dumbbell)\nSet 1: 10 kg x 8 \nSet 2: 10 kg x 8 \nSet 3: 10 kg x 8 \n\nDeadlift (Barbell)\nSet 1: 30 kg x 10 \nSet 2: 30 kg x 10 \nSet 3: 30 kg x 10 \nSet 4: 30 kg x 10 \n\nLat Pulldown (Cable)\nSet 1: 20 kg x 10 \nSet 2: 20 kg x 10 \nSet 3: 20 kg x 10 \n\nChest Fly (Machine)\nSet 1: 10 kg x 10 \nSet 2: 10 kg x 10 \nSet 3: 10 kg x 10 \n\nStanding Calf Raise\nSet 1: 15 reps \nSet 2: 15 reps \n",
+      "path": "d4zfhrwzqd1yjnfm",
+      "activity_type": "WeightTraining",
+      "map_url": false,
+      "distance": 0,
+      "total_elevation_gain": 0
+    },
+    {
+      "name": "ROUVY - 7 Minute Cool-down",
+      "start_date": {
+        "date": "2026-05-26 17:19:22.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": null,
+      "path": "9wh7phaqmiuxooby",
+      "activity_type": "Virtual Cycling",
+      "map_url": "https://www.xertonline.com/assets/images/user/18502/map_9wh7phaqmiuxooby.png",
+      "distance": 3.73404,
+      "total_elevation_gain": 30
+    },
+    {
+      "name": "ROUVY - Race: Giro d'Italia | Racing Series | Stage 4 | Race B",
+      "start_date": {
+        "date": "2026-05-26 15:59:59.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": null,
+      "path": "e8yszpfer6wkjrae",
+      "activity_type": "Virtual Cycling",
+      "map_url": "https://www.xertonline.com/assets/images/user/18502/map_e8yszpfer6wkjrae.png",
+      "distance": 33.41407,
+      "total_elevation_gain": 825
+    },
+    {
+      "name": "ROUVY - Warm Up - Giro d'Italia 2025 | Stage 17 - Bormio ",
+      "start_date": {
+        "date": "2026-05-26 15:55:42.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": null,
+      "path": "tcf5whbpsoqxwh5l",
+      "activity_type": "Virtual Cycling",
+      "map_url": "https://www.xertonline.com/assets/images/user/18502/map_tcf5whbpsoqxwh5l.png",
+      "distance": 0.01993,
+      "total_elevation_gain": 1
+    },
+    {
+      "name": "ROUVY - IRONMAN Texas North American Championship",
+      "start_date": {
+        "date": "2026-05-26 15:47:51.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": null,
+      "path": "j5gdz4lsb773oh4h",
+      "activity_type": "Virtual Cycling",
+      "map_url": "https://www.xertonline.com/assets/images/user/18502/map_j5gdz4lsb773oh4h.png",
+      "distance": 2.96001,
+      "total_elevation_gain": 2
+    },
+    {
+      "name": "Routine A \u2014 Foundation Hinge + Push",
+      "start_date": {
+        "date": "2026-05-26 07:44:50.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": "Logged with hevyapp.com\n\nRomanian Deadlift (Dumbbell)\nSet 1: 10 kg x 8 \nSet 2: 10 kg x 8 \nSet 3: 10 kg x 8 \n\nGoblet Squat\nSet 1: 16 kg x 10 \nSet 2: 16 kg x 10 \nSet 3: 16 kg x 10 \n\nDumbbell Row\nSet 1: 10 kg x 10 \nSet 2: 10 kg x 10 \nSet 3: 10 kg x 10 \n\nShoulder Press (Dumbbell)\nSet 1: 10 kg x 8 \nSet 2: 10 kg x 8 \n\nPlank\nSet 1: 52s\nSet 2: 51s",
+      "path": "cqaaco6ouul1o1uu",
+      "activity_type": "WeightTraining",
+      "map_url": false,
+      "distance": 0,
+      "total_elevation_gain": 0
+    },
+    {
+      "name": "ROUVY - Race: MUCKERS SUNDAY AM HILL CLIMB",
+      "start_date": {
+        "date": "2026-05-24 07:59:30.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": null,
+      "path": "y7qgsosi2vubuuc8",
+      "activity_type": "Virtual Cycling",
+      "map_url": "https://www.xertonline.com/assets/images/user/18502/map_y7qgsosi2vubuuc8.png",
+      "distance": 367.51338,
+      "total_elevation_gain": 1430.8000000000006
+    },
+    {
+      "name": "ROUVY - QVRO4 Asque-Cietat",
+      "start_date": {
+        "date": "2026-05-22 14:16:58.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": null,
+      "path": "ylslowmob5amkzb4",
+      "activity_type": "Virtual Cycling",
+      "map_url": "https://www.xertonline.com/assets/images/user/18502/map_ylslowmob5amkzb4.png",
+      "distance": 25.62166,
+      "total_elevation_gain": 758
+    },
+    {
+      "name": "ROUVY - 7 Minute Cool-down",
+      "start_date": {
+        "date": "2026-05-21 16:34:42.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": null,
+      "path": "buezkjmuzlmtoyoi",
+      "activity_type": "Virtual Cycling",
+      "map_url": "https://www.xertonline.com/assets/images/user/18502/map_buezkjmuzlmtoyoi.png",
+      "distance": 3.8290300000000004,
+      "total_elevation_gain": 34
+    },
+    {
+      "name": "ROUVY - Race: Giro d'Italia | Racing Series | Stage 3 | Race H",
+      "start_date": {
+        "date": "2026-05-21 16:00:00.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": null,
+      "path": "uqczr97yhphnxsvb",
+      "activity_type": "Virtual Cycling",
+      "map_url": "https://www.xertonline.com/assets/images/user/18502/map_uqczr97yhphnxsvb.png",
+      "distance": 12.934379999999999,
+      "total_elevation_gain": 486
+    },
+    {
+      "name": "ROUVY - Warm Up - Giro d'Italia 2025 | Stage 6 - Napoli",
+      "start_date": {
+        "date": "2026-05-21 15:55:34.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": null,
+      "path": "bsjd1axllqxkrei5",
+      "activity_type": "Virtual Cycling",
+      "map_url": "https://www.xertonline.com/assets/images/user/18502/map_bsjd1axllqxkrei5.png",
+      "distance": 0.55349,
+      "total_elevation_gain": 0
+    },
+    {
+      "name": "ROUVY - Spi\u0161 Castle | Slovakia",
+      "start_date": {
+        "date": "2026-05-21 15:46:31.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": null,
+      "path": "sntj6edpb1wehnnr",
+      "activity_type": "Virtual Cycling",
+      "map_url": "https://www.xertonline.com/assets/images/user/18502/map_sntj6edpb1wehnnr.png",
+      "distance": 5.57357,
+      "total_elevation_gain": 22
+    },
+    {
+      "name": "ROUVY - Ponta do Pico | Azores",
+      "start_date": {
+        "date": "2026-05-19 16:40:11.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": null,
+      "path": "atzmcufpa7yiefh0",
+      "activity_type": "Virtual Cycling",
+      "map_url": "https://www.xertonline.com/assets/images/user/18502/map_atzmcufpa7yiefh0.png",
+      "distance": 13.58175,
+      "total_elevation_gain": 155
+    },
+    {
+      "name": "ROUVY - Race: Giro d'Italia | Racing Series | Stage 3 | Race B",
+      "start_date": {
+        "date": "2026-05-19 16:01:12.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": null,
+      "path": "fr8shcor51okxzhh",
+      "activity_type": "Virtual Cycling",
+      "map_url": "https://www.xertonline.com/assets/images/user/18502/map_fr8shcor51okxzhh.png",
+      "distance": 12.93411,
+      "total_elevation_gain": 486
+    },
+    {
+      "name": "ROUVY - Warm Up - Giro d'Italia 2025 | Stage 6 - Napoli",
+      "start_date": {
+        "date": "2026-05-19 15:58:03.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": null,
+      "path": "bblptwddb1nasshl",
+      "activity_type": "Virtual Cycling",
+      "map_url": "https://www.xertonline.com/assets/images/user/18502/map_bblptwddb1nasshl.png",
+      "distance": 0.07217,
+      "total_elevation_gain": 0
+    },
+    {
+      "name": "ROUVY - Giro d'Italia 2026 | Stage 10 - Massa",
+      "start_date": {
+        "date": "2026-05-19 15:49:00.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": null,
+      "path": "fvtiqskeguf0yxkp",
+      "activity_type": "Virtual Cycling",
+      "map_url": "https://www.xertonline.com/assets/images/user/18502/map_fvtiqskeguf0yxkp.png",
+      "distance": 4.01489,
+      "total_elevation_gain": 5
+    },
+    {
+      "name": "ROUVY - 7 Minute Cool-down",
+      "start_date": {
+        "date": "2026-05-17 09:33:25.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": null,
+      "path": "oxmhdzefj8v7p3da",
+      "activity_type": "Virtual Cycling",
+      "map_url": "https://www.xertonline.com/assets/images/user/18502/map_oxmhdzefj8v7p3da.png",
+      "distance": 2.7148499999999998,
+      "total_elevation_gain": 11
+    },
+    {
+      "name": "ROUVY - Race: MUCKERS SUNDAY AM HILL CLIMB. Flamengos | Azores",
+      "start_date": {
+        "date": "2026-05-17 08:15:00.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": null,
+      "path": "57slnjh2yuklhdlq",
+      "activity_type": "Virtual Cycling",
+      "map_url": "https://www.xertonline.com/assets/images/user/18502/map_57slnjh2yuklhdlq.png",
+      "distance": 35.30933,
+      "total_elevation_gain": 924
+    },
+    {
+      "name": "ROUVY - Warm Up - Flamengos | Azores",
+      "start_date": {
+        "date": "2026-05-17 08:11:49.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": null,
+      "path": "xceieq0f4xsrz8xv",
+      "activity_type": "Virtual Cycling",
+      "map_url": "https://www.xertonline.com/assets/images/user/18502/map_xceieq0f4xsrz8xv.png",
+      "distance": 0.14727,
+      "total_elevation_gain": 9
+    },
+    {
+      "name": "ROUVY - Cheddar Gorge | Babble Ride Across Britain",
+      "start_date": {
+        "date": "2026-05-17 08:01:50.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": null,
+      "path": "eck49f7yrqjagzro",
+      "activity_type": "Virtual Cycling",
+      "map_url": "https://www.xertonline.com/assets/images/user/18502/map_eck49f7yrqjagzro.png",
+      "distance": 4.87287,
+      "total_elevation_gain": 18
+    },
+    {
+      "name": "ROUVY - 7 Minute Cool-down",
+      "start_date": {
+        "date": "2026-05-15 16:03:58.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": null,
+      "path": "zv4bwing4zzbibz5",
+      "activity_type": "Virtual Cycling",
+      "map_url": "https://www.xertonline.com/assets/images/user/18502/map_zv4bwing4zzbibz5.png",
+      "distance": 3.84286,
+      "total_elevation_gain": 34
+    },
+    {
+      "name": "ROUVY - Race: Challenge St.Polten Race Preparation Ride",
+      "start_date": {
+        "date": "2026-05-15 15:00:00.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": null,
+      "path": "marzavt44ocgcmvj",
+      "activity_type": "Virtual Cycling",
+      "map_url": "https://www.xertonline.com/assets/images/user/18502/map_marzavt44ocgcmvj.png",
+      "distance": 38.65016000000001,
+      "total_elevation_gain": 372
+    },
+    {
+      "name": "ROUVY - Warm Up - Challenge St. Polten | Austria 40 km",
+      "start_date": {
+        "date": "2026-05-15 14:52:14.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": null,
+      "path": "lwzz8rbpxy3jtplf",
+      "activity_type": "Virtual Cycling",
+      "map_url": "https://www.xertonline.com/assets/images/user/18502/map_lwzz8rbpxy3jtplf.png",
+      "distance": 0.15363,
+      "total_elevation_gain": 3
+    },
+    {
+      "name": "ROUVY - Tour of the Alps 2026 | Stage 1 - Innsbruck",
+      "start_date": {
+        "date": "2026-05-15 14:40:18.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": null,
+      "path": "mpinsodtiidhh4tw",
+      "activity_type": "Virtual Cycling",
+      "map_url": "https://www.xertonline.com/assets/images/user/18502/map_mpinsodtiidhh4tw.png",
+      "distance": 5.93098,
+      "total_elevation_gain": 23
+    },
+    {
+      "name": "ROUVY - Race: Giro d'italia | Racing Series | Stage 2 | Race G",
+      "start_date": {
+        "date": "2026-05-14 11:00:00.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": null,
+      "path": "yqlxlmbwff7vhd6t",
+      "activity_type": "Virtual Cycling",
+      "map_url": "https://www.xertonline.com/assets/images/user/18502/map_yqlxlmbwff7vhd6t.png",
+      "distance": 28.380020000000002,
+      "total_elevation_gain": 150
+    },
+    {
+      "name": "ROUVY - Warm Up - Giro 2025 Stage 10 | Lucca - Pisa ",
+      "start_date": {
+        "date": "2026-05-14 10:50:45.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": null,
+      "path": "huhkjljmybyodngg",
+      "activity_type": "Virtual Cycling",
+      "map_url": "https://www.xertonline.com/assets/images/user/18502/map_huhkjljmybyodngg.png",
+      "distance": 0.8768400000000001,
+      "total_elevation_gain": 3
+    },
+    {
+      "name": "ROUVY - Giro d'Italia 2026 | Stage 6 - Salerno",
+      "start_date": {
+        "date": "2026-05-14 10:32:35.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": null,
+      "path": "jmxbzqkcoeka5mav",
+      "activity_type": "Virtual Cycling",
+      "map_url": "https://www.xertonline.com/assets/images/user/18502/map_jmxbzqkcoeka5mav.png",
+      "distance": 9.39913,
+      "total_elevation_gain": 17
+    },
+    {
+      "name": "ROUVY - Cool Down - Around Myvatn Lake | Iceland",
+      "start_date": {
+        "date": "2026-05-12 17:25:12.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": null,
+      "path": "pzgyvitio7rinovk",
+      "activity_type": "Virtual Cycling",
+      "map_url": "https://www.xertonline.com/assets/images/user/18502/map_pzgyvitio7rinovk.png",
+      "distance": 0.0030800000000000003,
+      "total_elevation_gain": 0
+    },
+    {
+      "name": "ROUVY - Race: TUNDRA LEAGUE: WHERE THE COLD REIGNS. American Watts stage six",
+      "start_date": {
+        "date": "2026-05-12 16:30:00.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": null,
+      "path": "yziu95yx0ernxxu5",
+      "activity_type": "Virtual Cycling",
+      "map_url": "https://www.xertonline.com/assets/images/user/18502/map_yziu95yx0ernxxu5.png",
+      "distance": 36.258160000000004,
+      "total_elevation_gain": 177
+    },
+    {
+      "name": "ROUVY - Warm Up - Around Myvatn Lake | Iceland",
+      "start_date": {
+        "date": "2026-05-12 16:27:46.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": null,
+      "path": "8kxndri4xmju8zbn",
+      "activity_type": "Virtual Cycling",
+      "map_url": "https://www.xertonline.com/assets/images/user/18502/map_8kxndri4xmju8zbn.png",
+      "distance": 0.25611,
+      "total_elevation_gain": 0
+    },
+    {
+      "name": "ROUVY - S\u00e3o Jo\u00e3o | Azores",
+      "start_date": {
+        "date": "2026-05-12 15:53:31.000000",
+        "timezone_type": 3,
+        "timezone": "UTC"
+      },
+      "description": null,
+      "path": "qx0chu08k0cwmwor",
+      "activity_type": "Virtual Cycling",
+      "map_url": "https://www.xertonline.com/assets/images/user/18502/map_qx0chu08k0cwmwor.png",
+      "distance": 11.67087,
+      "total_elevation_gain": 199
+    }
+  ]
+}

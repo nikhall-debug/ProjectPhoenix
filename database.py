@@ -87,6 +87,20 @@ def init_db():
         )
     """)
 
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS workouts (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            workout_date TEXT NOT NULL,
+            workout_type TEXT NOT NULL,
+            subtype TEXT,
+            source TEXT NOT NULL,
+            duration_minutes REAL,
+            rpe INTEGER,
+            notes TEXT,
+            created_at TEXT DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+
     conn.commit()
     conn.close()
 
@@ -260,6 +274,111 @@ def save_xert_status_record(status_response):
     conn.close()
 
 
+# ---------------------------------------------------------------------
+# Workouts
+# ---------------------------------------------------------------------
+
+def save_workout(
+    workout_date,
+    workout_type,
+    subtype,
+    source,
+    duration_minutes,
+    rpe,
+    notes,
+):
+    conn = sqlite3.connect(DB_FILE)
+    cur = conn.cursor()
+
+    cur.execute("""
+        INSERT INTO workouts
+        (
+            workout_date,
+            workout_type,
+            subtype,
+            source,
+            duration_minutes,
+            rpe,
+            notes
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+    """, (
+        str(workout_date),
+        workout_type,
+        subtype,
+        source,
+        duration_minutes,
+        rpe,
+        notes,
+    ))
+
+    conn.commit()
+    conn.close()
+
+
+def load_workouts():
+    conn = sqlite3.connect(DB_FILE)
+    df = pd.read_sql_query(
+        "SELECT * FROM workouts ORDER BY workout_date DESC, created_at DESC",
+        conn,
+    )
+    conn.close()
+    return df
+
+
+def get_latest_workout(workout_type=None):
+    conn = sqlite3.connect(DB_FILE)
+    cur = conn.cursor()
+
+    if workout_type is None:
+        cur.execute("""
+            SELECT *
+            FROM workouts
+            ORDER BY workout_date DESC, created_at DESC
+            LIMIT 1
+        """)
+    else:
+        cur.execute("""
+            SELECT *
+            FROM workouts
+            WHERE workout_type = ?
+            ORDER BY workout_date DESC, created_at DESC
+            LIMIT 1
+        """, (workout_type,))
+
+    result = cur.fetchone()
+    columns = [description[0] for description in cur.description] if cur.description else []
+
+    conn.close()
+
+    if result is None:
+        return None
+
+    return dict(zip(columns, result))
+
+
+def get_workouts_for_date(workout_date):
+    conn = sqlite3.connect(DB_FILE)
+
+    df = pd.read_sql_query(
+        """
+        SELECT *
+        FROM workouts
+        WHERE workout_date = ?
+        ORDER BY created_at DESC
+        """,
+        conn,
+        params=(str(workout_date),),
+    )
+
+    conn.close()
+    return df
+
+
+# ---------------------------------------------------------------------
+# Measurements and check-ins
+# ---------------------------------------------------------------------
+
 def get_latest_measurement_time(source):
     conn = sqlite3.connect(DB_FILE)
     cur = conn.cursor()
@@ -273,6 +392,10 @@ def get_latest_measurement_time(source):
     result = cur.fetchone()[0]
 
     conn.close()
+
+    if result is None:
+        return None
+
     return result
 
 
@@ -299,6 +422,7 @@ def get_latest_metric(source, metric_type):
         "unit": result[1],
         "measured_at": result[2],
     }
+
 
 def get_latest_health_metric(metric_type):
     conn = sqlite3.connect(DB_FILE)
@@ -330,6 +454,7 @@ def get_latest_health_metric(metric_type):
         "measured_at": result[3],
         "source": result[4],
     }
+
 
 def get_metric_values_since(metric_type, days=30):
     conn = sqlite3.connect(DB_FILE)
@@ -364,6 +489,7 @@ def get_metric_values_since(metric_type, days=30):
         }
         for row in rows
     ]
+
 
 def has_checkin_for_date(checkin_date):
     conn = sqlite3.connect(DB_FILE)
@@ -419,45 +545,6 @@ def get_latest_checkin():
         "notes": result[8],
     }
 
-def get_latest_measurement_time(source):
-    import sqlite3
-
-    conn = sqlite3.connect("phoenix.db")
-    cursor = conn.cursor()
-
-    cursor.execute(
-        """
-        SELECT MAX(measured_at)
-        FROM health_measurements
-        WHERE source = ?
-        """,
-        (source,),
-    )
-
-    result = cursor.fetchone()
-    conn.close()
-
-    if result is None or result[0] is None:
-        return None
-
-    return result[0]
-
-    cursor.execute(
-        """
-        SELECT MAX(measured_at)
-        FROM health_measurements
-        WHERE source = ?
-        """,
-        (source,),
-    )
-
-    result = cursor.fetchone()
-    conn.close()
-
-    if result is None or result[0] is None:
-        return None
-
-    return result[0][:10]
 
 def get_checkin_for_date(checkin_date):
     conn = sqlite3.connect(DB_FILE)
@@ -569,6 +656,7 @@ def get_latest_xert_status():
 
     return dict(zip(columns, result))
 
+
 def get_metric_values_for_date(metric_type, target_date):
     conn = sqlite3.connect(DB_FILE)
     cur = conn.cursor()
@@ -601,4 +689,4 @@ def get_metric_values_for_date(metric_type, target_date):
             "source": row[3],
         }
         for row in rows
-    ]    
+    ]
