@@ -78,6 +78,26 @@ withings_freshness = build_withings_freshness(withings_latest_time)
 apple_health_latest_time = get_latest_measurement_time("apple_health")
 apple_health_freshness = build_apple_health_freshness(apple_health_latest_time)
 
+
+def freshness_icon(status):
+    if status == "current":
+        return "🟢"
+    if status == "stale":
+        return "🟡"
+    return "🔴"
+
+
+def snapshot_icon(is_done):
+    return "🟢" if is_done else "🟡"
+
+
+def status_card(title, icon, label, detail=None):
+    st.markdown(f"### {title}")
+    st.markdown(f"**{icon} {label}**")
+    if detail:
+        st.caption(detail)
+
+
 st.title("🔥 Good morning, Nik")
 st.caption("Phoenix has collected what it can automatically. Here’s what it thinks about today.")
 
@@ -126,68 +146,66 @@ st.divider()
 st.header("🌅 Morning Snapshot")
 
 if snapshot["completed"] == snapshot["total"]:
-    st.success("✅ Morning Snapshot Complete. Phoenix is ready.")
+    st.success(f"✅ Phoenix is ready · {snapshot['snapshot_percent']}% complete")
 else:
     st.warning(
-        f"🟡 Morning Snapshot {snapshot['snapshot_percent']}% complete. "
+        f"🟡 Phoenix is {snapshot['snapshot_percent']}% ready. "
         "Complete the missing items below and Phoenix will update."
     )
 
-col1, col2 = st.columns([3, 1])
+st.subheader("Data freshness")
 
-with col1:
-    st.subheader("Data freshness")
+fresh_col1, fresh_col2, fresh_col3, fresh_col4 = st.columns(4)
 
+with fresh_col1:
     if withings_is_connected():
-        st.caption("Withings is connected.")
+        status_card(
+            "Withings",
+            freshness_icon(withings_freshness["status"]),
+            "Connected",
+            withings_freshness["message"],
+        )
+    else:
+        status_card("Withings", "🔴", "Not connected")
 
-        if withings_freshness["status"] == "current":
-            st.success(withings_freshness["message"])
-        elif withings_freshness["status"] == "stale":
-            st.warning(withings_freshness["message"])
-        else:
-            st.error(withings_freshness["message"])
+with fresh_col2:
+    status_card(
+        "Apple Health",
+        freshness_icon(apple_health_freshness["status"]),
+        "Available" if apple_health_available else "Waiting",
+        apple_health_freshness["message"],
+    )
 
+with fresh_col3:
+    status_card(
+        "Check-in",
+        snapshot_icon(snapshot["today_checkin_done"]),
+        "Complete" if snapshot["today_checkin_done"] else "Missing",
+        "Today" if snapshot["today_checkin_done"] else "Not entered yet",
+    )
+
+with fresh_col4:
+    status_card(
+        "Lumen",
+        snapshot_icon(snapshot["lumen_entered"]),
+        "Entered" if snapshot["lumen_entered"] else "Missing",
+        "Today" if snapshot["lumen_entered"] else "Add it below",
+    )
+
+sync_col1, sync_col2, sync_col3, sync_col4 = st.columns(4)
+
+with sync_col1:
+    if withings_is_connected():
         if st.button("🔄 Sync Withings now"):
             with st.spinner("Syncing Withings data..."):
                 sync_withings_once_per_session(st, force=True)
             st.success("Withings sync complete.")
             st.rerun()
     else:
-        st.warning("Withings is not connected.")
         st.link_button("Connect Withings", build_authorization_url())
 
-    if apple_health_freshness["status"] == "current":
-        st.success(apple_health_freshness["message"])
-    elif apple_health_freshness["status"] == "stale":
-        st.warning(apple_health_freshness["message"])
-    else:
-        st.error(apple_health_freshness["message"])
-
-    st.subheader("Snapshot checklist")
-
-    if snapshot["body_measurements_available"]:
-        st.success("☑ Body measurements")
-    else:
-        st.warning("☐ Body measurements")
-
-    if apple_health_available:
-        st.success("☑ Apple Health")
-    else:
-        st.warning("☐ Apple Health")
-
-    if snapshot["today_checkin_done"]:
-        st.success("☑ Morning check-in")
-    else:
-        st.warning("☐ Morning check-in")
-
-    if snapshot["lumen_entered"]:
-        st.success("☑ Lumen")
-    else:
-        st.info("☐ Lumen")
-
-with col2:
-    st.metric("Snapshot", f"{snapshot['snapshot_percent']}%")
+with sync_col2:
+    st.caption("Apple Health auto-syncs from local export files.")
 
 st.divider()
 

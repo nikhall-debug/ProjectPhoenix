@@ -23,6 +23,28 @@ Project Phoenix is a personal health intelligence platform designed to combine d
 
 ---
 
+## Project Phoenix v0.9.4-alpha
+
+### Added
+- Full Xert workout integration into the unified workout database.
+- Automatic prioritisation of Xert over Apple Health for cycling activities.
+- Daily workout grouping for cycling and movement sessions.
+- Daily XSS aggregation across multiple rides.
+- Initial Workout Engine capable of summarising a day's training.
+- First version of the Phoenix Interpretation panel.
+
+### Improved
+- Fixed Xert activity date parsing and session timestamps.
+- Improved duplicate detection between Apple Health and Xert.
+- Workout page now presents complete training days rather than individual activities.
+- Cycling, strength and movement now follow a consistent presentation model.
+
+### Foundation for
+- Phoenix Intelligence workout interpretation.
+- Recovery cost modelling.
+- Muscle load analysis.
+- Coaching recommendations based on combined readiness and workout history.
+
 ## Phoenix v0.9.3-alpha
 
 ### Reliability
