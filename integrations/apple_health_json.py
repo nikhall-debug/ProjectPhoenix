@@ -3,7 +3,7 @@ from pathlib import Path
 
 from config import APPLE_EXPORT_FOLDER
 from database import save_health_measurement
-from workout_database import save_training_session_from_apple_workout
+from workout_staging import stage_training_session_from_apple_workout
 
 
 METRIC_MAP = {
@@ -96,15 +96,19 @@ def sync_apple_workout_exports(base_folder=None):
             workouts = _read_workout_json_file(workout_file)
 
             for apple_workout in workouts:
-                result = save_training_session_from_apple_workout(apple_workout)
+                result = stage_training_session_from_apple_workout(
+                    apple_workout
+                )
 
-                if result["imported"]:
+                if result.get("staged"):
                     imported += 1
                 else:
                     duplicates += 1
 
         except Exception as error:
-            errors.append(f"{workout_file.name}: {error}")
+            errors.append(
+                f"{workout_file.name}: {error}"
+            )
 
     return {
         "imported": imported,

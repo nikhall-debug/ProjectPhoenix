@@ -1,11 +1,14 @@
+from dataclasses import asdict, is_dataclass
 from datetime import datetime
 import json
+from typing import Any, Dict, Optional, Tuple
 
+import pandas as pd
 import streamlit as st
 
 from database import init_db
-from integrations.hevy import fetch_and_save_workouts, hevy_is_connected
 from integrations.apple_health_json import sync_apple_workout_exports
+from integrations.hevy import fetch_and_save_workouts, hevy_is_connected
 from integrations.xert import fetch_and_save_xert_activities
 from workout_database import (
     get_latest_strength_session,
@@ -14,9 +17,12 @@ from workout_database import (
     load_training_sessions,
 )
 from workout_engine import build_workout_summary
+from workout_intelligence import build_workout_intelligence
 
-init_db()
-init_workout_tables()
+
+# ---------------------------------------------------------------------
+# Page setup
+# ---------------------------------------------------------------------
 
 st.set_page_config(
     page_title="Workouts · Project Phoenix",
@@ -24,230 +30,1108 @@ st.set_page_config(
     layout="wide",
 )
 
+init_db()
+init_workout_tables()
+
 st.title("🏋️ Workouts")
-st.caption("Project Phoenix · Workout analysis hub")
+st.caption(
+    "Project Phoenix · What you did, what it means, and what comes next"
+)
 
 
-def format_date(date_string):
-    if not date_string:
+# ---------------------------------------------------------------------
+# General helpers
+# ---------------------------------------------------------------------
+
+def format_date(value: Any) -> str:
+    if value is None or value == "":
         return "Unknown date"
 
     try:
-        return datetime.fromisoformat(date_string).strftime("%d %b %Y")
-    except ValueError:
-        return date_string
+        return datetime.fromisoformat(str(value)).strftime("%d %b %Y")
+    except (TypeError, ValueError):
+        return str(value)
 
 
-def show_not_ready_message(feature):
-    st.warning(f"{feature} will be available in a future update.")
-
-
-def safe_duration(duration):
-    if duration is not None and str(duration) != "nan":
-        return f"{duration:.1f} min"
-
-    return "Duration unavailable"
-
-
-def extract_xert_summary(session):
+def safe_float(
+    value: Any,
+    default: float = 0.0,
+) -> float:
     try:
-        raw = json.loads(session.get("raw_data") or "{}")
-    except Exception:
+        if value is None or pd.isna(value):
+            return default
+
+        return float(value)
+
+    except (TypeError, ValueError):
+        return default
+
+
+def safe_duration(value: Any) -> str:
+    if value is None:
+        return "Duration unavailable"
+
+    try:
+        if pd.isna(value):
+            return "Duration unavailable"
+    except (TypeError, ValueError):
+        pass
+
+    try:
+        return f"{float(value):.1f} min"
+    except (TypeError, ValueError):
+        return "Duration unavailable"
+
+
+def clean_text(
+    value: Any,
+    fallback: str = "Not available",
+) -> str:
+    if value is None:
+        return fallback
+
+    text = str(value).strip()
+
+    if not text:
+        return fallback
+
+    return text
+
+
+def humanise_label(value: Any) -> str:
+    text = clean_text(value, "Unknown")
+    return text.replace("_", " ").strip().title()
+
+
+def show_not_ready_message(feature: str) -> None:
+    st.warning(
+        f"{feature} will be available in a future update."
+    )
+
+
+def object_to_dict(value: Any) -> Dict[str, Any]:
+    if value is None:
+        return {}
+
+    if isinstance(value, dict):
+        return value
+
+    if hasattr(value, "to_dict") and callable(value.to_dict):
+        converted = value.to_dict()
+
+        if isinstance(converted, dict):
+            return converted
+
+    if is_dataclass(value):
+        return asdict(value)
+
+    if hasattr(value, "__dict__"):
+        return dict(value.__dict__)
+
+    return {}
+
+
+# ---------------------------------------------------------------------
+# Xert helpers
+# ---------------------------------------------------------------------
+
+def extract_xert_summary(
+    session: Any,
+) -> Dict[str, Any]:
+    try:
+        raw = json.loads(
+            session.get("raw_data") or "{}"
+        )
+    except (
+        TypeError,
+        ValueError,
+        json.JSONDecodeError,
+    ):
         raw = {}
 
-    summary = raw.get("summary", {})
+    summary = raw.get("summary") or {}
 
     return {
         "xss": summary.get("xss"),
         "distance": summary.get("distance"),
         "np": summary.get("normalized_power"),
         "avg_power": summary.get("avg_power"),
-        "difficulty": summary.get("difficulty_rating"),
+        "difficulty": summary.get(
+            "difficulty_rating"
+        ),
     }
 
 
-def get_latest_day_sessions(session_types):
-    sessions = load_training_sessions(limit=300)
+# ---------------------------------------------------------------------
+# Session loading helpers
+# ---------------------------------------------------------------------
 
-    if sessions.empty:
+def get_latest_day_sessions(
+    session_types: list[str],
+) -> Tuple[
+    Optional[Any],
+    Optional[pd.DataFrame],
+]:
+    sessions = load_training_sessions(
+        limit=300
+    )
+
+    if sessions is None or sessions.empty:
         return None, None
 
-    filtered = sessions[sessions["session_type"].isin(session_types)]
+    if "session_type" not in sessions.columns:
+        return None, None
+
+    filtered = sessions[
+        sessions["session_type"].isin(
+            session_types
+        )
+    ].copy()
 
     if filtered.empty:
         return None, None
 
-    latest_date = filtered["session_date"].max()
-    latest_day = filtered[filtered["session_date"] == latest_date].sort_values("start_time")
+    filtered = filtered.dropna(
+        subset=["session_date"]
+    )
+
+    if filtered.empty:
+        return None, None
+
+    latest_date = filtered[
+        "session_date"
+    ].max()
+
+    latest_day = filtered[
+        filtered["session_date"]
+        == latest_date
+    ].copy()
+
+    if "start_time" in latest_day.columns:
+        latest_day = latest_day.sort_values(
+            "start_time",
+            na_position="last",
+        )
 
     return latest_date, latest_day
 
 
 def get_latest_cycling_day_sessions():
-    return get_latest_day_sessions(["Cycling"])
+    return get_latest_day_sessions(
+        ["Cycling"]
+    )
 
 
 def get_latest_movement_day_sessions():
-    return get_latest_day_sessions(["Walking", "Hiking", "Running", "Mobility", "Other"])
+    return get_latest_day_sessions(
+        [
+            "Walking",
+            "Hiking",
+            "Running",
+            "Mobility",
+            "Yoga",
+            "Other",
+        ]
+    )
 
-
-def show_latest_cycling_day():
-    latest_date, rides = get_latest_cycling_day_sessions()
-
-    if rides is None or rides.empty:
-        st.write("No cycling workouts recorded yet.")
-        return None
-
-    st.write(f"**{format_date(latest_date)}**")
-    st.caption(f"{len(rides)} cycling activities from Xert")
-
-    total_minutes = rides["duration_minutes"].fillna(0).sum()
-    st.write(f"⏱ Total: **{total_minutes:.1f} min**")
-
-    for _, ride in rides.iterrows():
-        xert = extract_xert_summary(ride)
-
-        with st.container(border=True):
-            st.write(f"**{ride['title']}**")
-            st.write(f"⏱ {safe_duration(ride.get('duration_minutes'))}")
-
-            details = []
-
-            if xert["distance"] is not None:
-                details.append(f"{xert['distance']:.1f} km")
-
-            if xert["xss"] is not None:
-                details.append(f"XSS {xert['xss']:.1f}")
-
-            if xert["np"] is not None:
-                details.append(f"NP {xert['np']:.0f} W")
-
-            if xert["difficulty"]:
-                details.append(f"Difficulty: {xert['difficulty']}")
-
-            if details:
-                st.caption(" · ".join(details))
-
-    return rides
-
-
-def show_latest_movement_day():
-    latest_date, movements = get_latest_movement_day_sessions()
-
-    if movements is None or movements.empty:
-        st.write("No other movement recorded yet.")
-        return None
-
-    st.write(f"**{format_date(latest_date)}**")
-    st.caption(f"{len(movements)} movement activities")
-
-    total_minutes = movements["duration_minutes"].fillna(0).sum()
-    st.write(f"⏱ Total: **{total_minutes:.1f} min**")
-
-    for _, movement in movements.iterrows():
-        with st.container(border=True):
-            st.write(f"**{movement['title'] or movement['session_type']}**")
-            st.write(f"⏱ {safe_duration(movement.get('duration_minutes'))}")
-            st.caption(f"{movement['session_type']} · Source: {movement['source']}")
-
-    return movements
-
-
-def format_strength_line(sets_count, average_reps, max_weight):
-    if max_weight > 0:
-        return f"{sets_count} × {average_reps} @ {max_weight:.0f} kg"
-
-    return f"{sets_count} × {average_reps} bodyweight"
-
-
-def show_exercise_summary(exercises):
-    if exercises.empty:
-        st.write("No exercise details available yet.")
-        return
-
-    st.write("**Exercises**")
-
-    for _, exercise in exercises.iterrows():
-        name = exercise["exercise_name"]
-        sets_count = int(exercise["sets_count"] or 0)
-        total_reps = int(exercise["total_reps"] or 0)
-        total_volume = exercise["total_volume_kg"] or 0
-        max_weight = exercise["max_weight_kg"] or 0
-        duration_seconds = exercise["duration_seconds"] or 0
-
-        average_reps = round(total_reps / sets_count) if sets_count else 0
-
-        with st.container(border=True):
-            st.write(f"**{name}**")
-
-            if duration_seconds and total_reps == 0:
-                st.write(f"{sets_count} × {duration_seconds / sets_count:.0f} sec")
-            elif max_weight > 0:
-                st.write(format_strength_line(sets_count, average_reps, max_weight))
-                st.caption(f"{total_volume:.0f} kg total volume")
-            else:
-                st.write(format_strength_line(sets_count, average_reps, max_weight))
-                st.caption(f"{total_reps} total reps")
-
-
-def show_strength_latest():
-    latest = get_latest_strength_session()
-
-    if latest is None:
-        st.write("No strength sessions recorded yet.")
-        return None, None
-
-    exercises = load_training_exercises_for_session(latest["id"])
-
-    st.write(f"**{latest['title'] or 'Untitled strength session'}**")
-    st.write(f"📅 {format_date(latest['session_date'])}")
-    st.write(f"⏱ {safe_duration(latest.get('duration_minutes'))}")
-    st.write(f"🏋️ {len(exercises)} exercises")
-    st.caption(f"Source: {latest['source']}")
-
-    return latest, exercises
 
 # ---------------------------------------------------------------------
-# Phoenix interpretation
+# Workout Intelligence data handoff
 # ---------------------------------------------------------------------
 
-st.divider()
+def build_latest_day_workout_records(
+    workout_summary: Dict[str, Any],
+) -> list[Dict[str, Any]]:
+    """
+    Build normalized workout records for the same training day shown
+    in the Phoenix overview.
 
-st.subheader("🧠 Phoenix Interpretation")
+    Workout Intelligence interprets these records. It does not fetch
+    workout data itself.
+    """
+    training_date = workout_summary.get(
+        "date"
+    )
 
-workout_summary = build_workout_summary()
+    if not training_date:
+        return []
 
-with st.container(border=True):
-    st.write(f"**Training day: {format_date(workout_summary['date'])}**")
+    sessions = load_training_sessions(
+        limit=300
+    )
 
-    if not workout_summary["has_training"]:
-        st.write(workout_summary["summary"])
-    else:
+    if sessions is None or sessions.empty:
+        return []
+
+    if "session_date" not in sessions.columns:
+        return []
+
+    day_sessions = sessions[
+        sessions["session_date"].astype(str)
+        == str(training_date)
+    ].copy()
+
+    if day_sessions.empty:
+        return []
+
+    workout_records = []
+
+    for _, session in day_sessions.iterrows():
+        session_type = clean_text(
+            session.get("session_type"),
+            "Other",
+        )
+
+        record = {
+            "name": clean_text(
+                session.get("title"),
+                session_type,
+            ),
+            "session_type": session_type,
+            "source": clean_text(
+                session.get("source"),
+                "Unknown",
+            ),
+            "duration_minutes": safe_float(
+                session.get(
+                    "duration_minutes"
+                )
+            ),
+            "xss": None,
+            "distance_km": None,
+            "intensity_factor": None,
+            "difficulty": None,
+        }
+
+        if session_type == "Cycling":
+            xert = extract_xert_summary(
+                session
+            )
+
+            record["xss"] = xert.get(
+                "xss"
+            )
+
+            record["distance_km"] = (
+                xert.get("distance")
+            )
+
+            record["difficulty"] = (
+                xert.get("difficulty")
+            )
+
+        workout_records.append(record)
+
+    return workout_records
+
+
+def build_current_workout_intelligence(
+    workout_summary: Dict[str, Any],
+) -> Tuple[
+    Optional[Any],
+    Optional[str],
+]:
+    """
+    Generate Workout Intelligence for the same latest training day
+    shown in the factual workout summary.
+    """
+    try:
+        workout_records = (
+            build_latest_day_workout_records(
+                workout_summary
+            )
+        )
+
+        intelligence = (
+            build_workout_intelligence(
+                workouts=workout_records,
+            )
+        )
+
+        return intelligence, None
+
+    except Exception as exc:
+        return None, str(exc)
+
+
+# ---------------------------------------------------------------------
+# Phoenix training-day summary
+# ---------------------------------------------------------------------
+
+def render_training_summary(
+    workout_summary: Dict[str, Any],
+) -> None:
+    st.subheader("Latest training day")
+
+    with st.container(border=True):
+        training_date = (
+            workout_summary.get("date")
+        )
+
+        st.write(
+            f"**{format_date(training_date)}**"
+        )
+
+        if not workout_summary.get(
+            "has_training",
+            False,
+        ):
+            st.info(
+                clean_text(
+                    workout_summary.get(
+                        "summary"
+                    ),
+                    (
+                        "No training was recorded "
+                        "for the latest day."
+                    ),
+                )
+            )
+            return
+
+        cycling_minutes = safe_float(
+            workout_summary.get(
+                "cycling_minutes"
+            )
+        )
+
+        cycling_xss = safe_float(
+            workout_summary.get(
+                "cycling_xss"
+            )
+        )
+
+        strength_minutes = safe_float(
+            workout_summary.get(
+                "strength_minutes"
+            )
+        )
+
+        strength_count = int(
+            safe_float(
+                workout_summary.get(
+                    "strength_count"
+                )
+            )
+        )
+
+        movement_minutes = safe_float(
+            workout_summary.get(
+                "movement_minutes"
+            )
+        )
+
+        movement_count = int(
+            safe_float(
+                workout_summary.get(
+                    "movement_count"
+                )
+            )
+        )
+
         c1, c2, c3 = st.columns(3)
 
         with c1:
             st.metric(
                 "Cycling",
-                f"{workout_summary['cycling_minutes']:.1f} min",
-                f"XSS {workout_summary['cycling_xss']:.1f}",
+                f"{cycling_minutes:.1f} min",
+                f"XSS {cycling_xss:.1f}",
             )
 
         with c2:
             st.metric(
                 "Strength",
-                f"{workout_summary['strength_minutes']:.1f} min",
-                f"{workout_summary['strength_count']} session(s)",
+                f"{strength_minutes:.1f} min",
+                (
+                    f"{strength_count} "
+                    "session(s)"
+                ),
             )
 
         with c3:
             st.metric(
-                "Movement",
-                f"{workout_summary['movement_minutes']:.1f} min",
-                f"{workout_summary['movement_count']} session(s)",
+                "Other movement",
+                f"{movement_minutes:.1f} min",
+                (
+                    f"{movement_count} "
+                    "session(s)"
+                ),
             )
 
-        st.write("**Interpretation**")
-        st.write(workout_summary["interpretation"])
+        interpretation = (
+            workout_summary.get(
+                "interpretation"
+            )
+        )
+
+        if interpretation:
+            st.write("**Day summary**")
+            st.write(interpretation)
+
+
+# ---------------------------------------------------------------------
+# Workout Intelligence display
+# ---------------------------------------------------------------------
+
+def render_list_section(
+    title: str,
+    values: Any,
+    empty_message: Optional[str] = None,
+) -> None:
+    st.write(f"**{title}**")
+
+    if not values:
+        if empty_message:
+            st.caption(empty_message)
+
+        return
+
+    if isinstance(values, str):
+        values = [values]
+
+    for value in values:
+        if value:
+            st.write(f"• {value}")
+
+
+def render_workout_intelligence(
+    intelligence_result: Any,
+    error_message: Optional[str],
+) -> None:
+    st.subheader(
+        "🧠 Workout Intelligence"
+    )
+
+    st.caption(
+        "Phoenix combines every recorded session from the latest "
+        "training day and interprets what the day means as a whole."
+    )
+
+    if error_message:
+        with st.container(border=True):
+            st.error(
+                "Workout Intelligence could not be generated."
+            )
+            st.caption(error_message)
+
+        return
+
+    intelligence = object_to_dict(
+        intelligence_result
+    )
+
+    if not intelligence:
+        with st.container(border=True):
+            st.info(
+                "Workout Intelligence returned no result for the "
+                "latest training day."
+            )
+
+        return
+
+    training_type = humanise_label(
+        intelligence.get(
+            "training_type"
+        )
+    )
+
+    primary_session = humanise_label(
+        intelligence.get(
+            "primary_session"
+        )
+    )
+
+    primary_focus = humanise_label(
+        intelligence.get(
+            "primary_focus"
+        )
+    )
+
+    load = humanise_label(
+        intelligence.get("load")
+    )
+
+    quality = humanise_label(
+        intelligence.get("quality")
+    )
+
+    fatigue = humanise_label(
+        intelligence.get(
+            "fatigue_generated"
+        )
+    )
+
+    fitness_effect = humanise_label(
+        intelligence.get(
+            "fitness_effect"
+        )
+    )
+
+    goal_progress = humanise_label(
+        intelligence.get(
+            "goal_progress"
+        )
+    )
+
+    confidence_raw = safe_float(
+        intelligence.get(
+            "confidence"
+        ),
+        default=0.0,
+    )
+
+    if confidence_raw <= 1:
+        confidence_percent = (
+            confidence_raw * 100
+        )
+    else:
+        confidence_percent = (
+            confidence_raw
+        )
+
+    with st.container(border=True):
+        top_left, top_middle, top_right = (
+            st.columns(
+                [1.45, 1, 1]
+            )
+        )
+
+        with top_left:
+            st.caption(
+                "Training-day classification"
+            )
+
+            st.markdown(
+                f"### {training_type}"
+            )
+
+            st.write(
+                clean_text(
+                    intelligence.get(
+                        "summary"
+                    )
+                )
+            )
+
+        with top_middle:
+            st.metric(
+                "Primary session",
+                primary_session,
+            )
+
+            st.metric(
+                "Primary focus",
+                primary_focus,
+            )
+
+        with top_right:
+            st.metric(
+                "Daily load",
+                load,
+            )
+
+            st.metric(
+                "Confidence",
+                f"{confidence_percent:.0f}%",
+            )
+
+        st.divider()
+
+        c1, c2, c3, c4 = st.columns(4)
+
+        with c1:
+            st.write(
+                "**Workout quality**"
+            )
+            st.write(quality)
+
+        with c2:
+            st.write(
+                "**Fatigue generated**"
+            )
+            st.write(fatigue)
+
+        with c3:
+            st.write(
+                "**Fitness effect**"
+            )
+            st.write(fitness_effect)
+
+        with c4:
+            st.write(
+                "**Goal progress**"
+            )
+            st.write(goal_progress)
+
+        signals = (
+            intelligence.get(
+                "signals"
+            )
+            or []
+        )
+
+        recommendations = (
+            intelligence.get(
+                "recommendations"
+            )
+            or []
+        )
+
+        if signals or recommendations:
+            st.divider()
+
+            left, right = st.columns(2)
+
+            with left:
+                render_list_section(
+                    "What Phoenix noticed",
+                    signals,
+                    (
+                        "No notable signals "
+                        "were identified."
+                    ),
+                )
+
+            with right:
+                render_list_section(
+                    "Coaching guidance",
+                    recommendations,
+                    (
+                        "No additional "
+                        "recommendation is needed."
+                    ),
+                )
+
+
+# ---------------------------------------------------------------------
+# Cycling display
+# ---------------------------------------------------------------------
+
+def show_latest_cycling_day():
+    latest_date, rides = (
+        get_latest_cycling_day_sessions()
+    )
+
+    if rides is None or rides.empty:
+        st.write(
+            "No cycling workouts recorded yet."
+        )
+        return None
+
+    st.write(
+        f"**{format_date(latest_date)}**"
+    )
+
+    st.caption(
+        f"{len(rides)} cycling activities from Xert"
+    )
+
+    total_minutes = (
+        rides["duration_minutes"]
+        .fillna(0)
+        .sum()
+    )
+
+    st.write(
+        f"⏱ Total: **{total_minutes:.1f} min**"
+    )
+
+    for _, ride in rides.iterrows():
+        xert = extract_xert_summary(
+            ride
+        )
+
+        with st.container(border=True):
+            title = clean_text(
+                ride.get("title"),
+                "Untitled cycling activity",
+            )
+
+            st.write(f"**{title}**")
+
+            st.write(
+                f"⏱ "
+                f"{safe_duration(ride.get('duration_minutes'))}"
+            )
+
+            details = []
+
+            if xert["distance"] is not None:
+                details.append(
+                    f"{safe_float(xert['distance']):.1f} km"
+                )
+
+            if xert["xss"] is not None:
+                details.append(
+                    f"XSS "
+                    f"{safe_float(xert['xss']):.1f}"
+                )
+
+            if xert["np"] is not None:
+                details.append(
+                    f"NP "
+                    f"{safe_float(xert['np']):.0f} W"
+                )
+
+            if xert["avg_power"] is not None:
+                details.append(
+                    f"Avg "
+                    f"{safe_float(xert['avg_power']):.0f} W"
+                )
+
+            if xert["difficulty"]:
+                details.append(
+                    f"Difficulty: "
+                    f"{xert['difficulty']}"
+                )
+
+            if details:
+                st.caption(
+                    " · ".join(details)
+                )
+
+    return rides
+
+
+def calculate_total_xss(
+    rides: Optional[pd.DataFrame],
+) -> float:
+    if rides is None or rides.empty:
+        return 0.0
+
+    total_xss = 0.0
+
+    for _, ride in rides.iterrows():
+        xert = extract_xert_summary(
+            ride
+        )
+
+        total_xss += safe_float(
+            xert.get("xss")
+        )
+
+    return total_xss
+
+
+# ---------------------------------------------------------------------
+# Strength display
+# ---------------------------------------------------------------------
+
+def format_strength_line(
+    sets_count: int,
+    average_reps: int,
+    max_weight: float,
+) -> str:
+    if max_weight > 0:
+        return (
+            f"{sets_count} × "
+            f"{average_reps} "
+            f"@ {max_weight:.0f} kg"
+        )
+
+    return (
+        f"{sets_count} × "
+        f"{average_reps} bodyweight"
+    )
+
+
+def show_exercise_summary(
+    exercises: pd.DataFrame,
+) -> None:
+    if (
+        exercises is None
+        or exercises.empty
+    ):
+        st.write(
+            "No exercise details available yet."
+        )
+        return
+
+    st.write("**Exercises**")
+
+    for _, exercise in exercises.iterrows():
+        name = clean_text(
+            exercise.get(
+                "exercise_name"
+            ),
+            "Unnamed exercise",
+        )
+
+        sets_count = int(
+            safe_float(
+                exercise.get(
+                    "sets_count"
+                )
+            )
+        )
+
+        total_reps = int(
+            safe_float(
+                exercise.get(
+                    "total_reps"
+                )
+            )
+        )
+
+        total_volume = safe_float(
+            exercise.get(
+                "total_volume_kg"
+            )
+        )
+
+        max_weight = safe_float(
+            exercise.get(
+                "max_weight_kg"
+            )
+        )
+
+        duration_seconds = safe_float(
+            exercise.get(
+                "duration_seconds"
+            )
+        )
+
+        average_reps = (
+            round(
+                total_reps
+                / sets_count
+            )
+            if sets_count
+            else 0
+        )
+
+        with st.container(border=True):
+            st.write(f"**{name}**")
+
+            if (
+                duration_seconds > 0
+                and total_reps == 0
+            ):
+                average_seconds = (
+                    duration_seconds
+                    / sets_count
+                    if sets_count
+                    else duration_seconds
+                )
+
+                st.write(
+                    f"{sets_count} × "
+                    f"{average_seconds:.0f} sec"
+                )
+
+            elif max_weight > 0:
+                st.write(
+                    format_strength_line(
+                        sets_count,
+                        average_reps,
+                        max_weight,
+                    )
+                )
+
+                st.caption(
+                    f"{total_volume:.0f} kg "
+                    "total volume"
+                )
+
+            else:
+                st.write(
+                    format_strength_line(
+                        sets_count,
+                        average_reps,
+                        max_weight,
+                    )
+                )
+
+                st.caption(
+                    f"{total_reps} total reps"
+                )
+
+
+def show_strength_latest():
+    latest = (
+        get_latest_strength_session()
+    )
+
+    if latest is None:
+        st.write(
+            "No strength sessions recorded yet."
+        )
+        return None, None
+
+    exercises = (
+        load_training_exercises_for_session(
+            latest["id"]
+        )
+    )
+
+    title = clean_text(
+        latest.get("title"),
+        "Untitled strength session",
+    )
+
+    st.write(f"**{title}**")
+
+    st.write(
+        f"📅 "
+        f"{format_date(latest.get('session_date'))}"
+    )
+
+    st.write(
+        f"⏱ "
+        f"{safe_duration(latest.get('duration_minutes'))}"
+    )
+
+    st.write(
+        f"🏋️ {len(exercises)} exercises"
+    )
+
+    st.caption(
+        f"Source: "
+        f"{clean_text(latest.get('source'))}"
+    )
+
+    return latest, exercises
+
+
+# ---------------------------------------------------------------------
+# Other movement display
+# ---------------------------------------------------------------------
+
+def show_latest_movement_day():
+    latest_date, movements = (
+        get_latest_movement_day_sessions()
+    )
+
+    if (
+        movements is None
+        or movements.empty
+    ):
+        st.write(
+            "No other movement recorded yet."
+        )
+        return None
+
+    st.write(
+        f"**{format_date(latest_date)}**"
+    )
+
+    st.caption(
+        f"{len(movements)} movement activities"
+    )
+
+    total_minutes = (
+        movements["duration_minutes"]
+        .fillna(0)
+        .sum()
+    )
+
+    st.write(
+        f"⏱ Total: **{total_minutes:.1f} min**"
+    )
+
+    for _, movement in movements.iterrows():
+        title = clean_text(
+            movement.get("title"),
+            clean_text(
+                movement.get(
+                    "session_type"
+                ),
+                "Movement activity",
+            ),
+        )
+
+        session_type = clean_text(
+            movement.get(
+                "session_type"
+            ),
+            "Other",
+        )
+
+        source = clean_text(
+            movement.get("source"),
+            "Unknown",
+        )
+
+        with st.container(border=True):
+            st.write(
+                f"**{title}**"
+            )
+
+            st.write(
+                f"⏱ "
+                f"{safe_duration(movement.get('duration_minutes'))}"
+            )
+
+            st.caption(
+                f"{session_type} · "
+                f"Source: {source}"
+            )
+
+    return movements
+
+
+# ---------------------------------------------------------------------
+# Build Phoenix interpretation
+# ---------------------------------------------------------------------
+
+try:
+    workout_summary = (
+        build_workout_summary()
+    )
+
+except Exception as exc:
+    workout_summary = {
+        "date": None,
+        "has_training": False,
+        "summary": (
+            "The workout summary could not be generated."
+        ),
+        "interpretation": "",
+        "cycling_minutes": 0.0,
+        "cycling_xss": 0.0,
+        "strength_minutes": 0.0,
+        "strength_count": 0,
+        "movement_minutes": 0.0,
+        "movement_count": 0,
+    }
+
+    workout_summary_error = str(exc)
+
+else:
+    workout_summary_error = None
+
+
+(
+    workout_intelligence,
+    workout_intelligence_error,
+) = build_current_workout_intelligence(
+    workout_summary
+)
+
+
+# ---------------------------------------------------------------------
+# Phoenix overview
+# ---------------------------------------------------------------------
+
+st.divider()
+
+render_training_summary(
+    workout_summary
+)
+
+if workout_summary_error:
+    st.caption(
+        "Workout summary diagnostic: "
+        f"{workout_summary_error}"
+    )
+
+st.divider()
+
+render_workout_intelligence(
+    workout_intelligence,
+    workout_intelligence_error,
+)
+
 
 # ---------------------------------------------------------------------
 # Cycling
@@ -256,58 +1140,129 @@ with st.container(border=True):
 st.divider()
 
 st.header("🚴 Cycling")
-st.caption("Primary training source. Phoenix uses Xert without trying to replace Xert.")
+
+st.caption(
+    "Xert remains the specialist cycling platform. "
+    "Phoenix interprets what each ride means for recovery, "
+    "readiness and the coaching decision."
+)
 
 with st.container(border=True):
     c1, c2, c3 = st.columns(3)
 
     with c1:
-        st.subheader("Latest cycling day")
-        latest_rides = show_latest_cycling_day()
+        st.subheader(
+            "Latest cycling day"
+        )
+
+        latest_rides = (
+            show_latest_cycling_day()
+        )
 
     with c2:
-        st.subheader("Cycling strain")
-        if latest_rides is None:
-            st.write("No cycling strain calculated yet.")
-        else:
-            total_xss = 0
-            for _, ride in latest_rides.iterrows():
-                xert = extract_xert_summary(ride)
-                if xert["xss"] is not None:
-                    total_xss += xert["xss"]
+        st.subheader(
+            "Cycling strain"
+        )
 
-            st.write(f"Total XSS: **{total_xss:.1f}**")
-            st.caption("Warm-ups and cool-downs included for now.")
+        if latest_rides is None:
+            st.write(
+                "No cycling strain calculated yet."
+            )
+
+        else:
+            total_xss = (
+                calculate_total_xss(
+                    latest_rides
+                )
+            )
+
+            total_minutes = (
+                latest_rides[
+                    "duration_minutes"
+                ]
+                .fillna(0)
+                .sum()
+            )
+
+            st.metric(
+                "Total XSS",
+                f"{total_xss:.1f}",
+            )
+
+            st.caption(
+                f"{total_minutes:.1f} minutes of cycling. "
+                "Warm-ups and cool-downs are currently included."
+            )
 
     with c3:
-        st.subheader("Core Temp overlay")
-        st.write("Planned for cycling workouts.")
+        st.subheader(
+            "CORE temperature"
+        )
+
+        st.write(
+            "Workout overlay planned."
+        )
+
+        st.caption(
+            "CORE data will eventually add heat-strain "
+            "context to cycling analysis."
+        )
+
+    st.divider()
 
     st.write("**Phoenix role**")
+
     st.write(
-        "Cycling analysis will focus on what the ride means for readiness, "
-        "recovery, and the daily coaching decision. Xert remains the specialist "
-        "cycling platform; Phoenix acts as the interpretation layer."
+        "Phoenix does not try to reproduce Xert's specialist "
+        "power analysis. It uses the resulting workout load as "
+        "one input when interpreting fatigue, fitness effect and "
+        "the appropriate next training decision."
     )
 
     c1, c2 = st.columns(2)
 
     with c1:
-        if st.button("🔄 Sync Xert rides", key="sync_xert"):
-            with st.spinner("Syncing Xert rides..."):
-                summary = fetch_and_save_xert_activities(days=60)
+        if st.button(
+            "🔄 Sync Xert rides",
+            key="sync_xert",
+            use_container_width=True,
+        ):
+            with st.spinner(
+                "Syncing Xert rides..."
+            ):
+                try:
+                    summary = (
+                        fetch_and_save_xert_activities(
+                            days=60
+                        )
+                    )
 
-            st.success(
-                f"Xert sync complete: {summary['imported']} imported, "
-                f"{summary['duplicates']} duplicates, "
-                f"{summary['skipped']} skipped, "
-                f"{summary['apple_duplicates_removed']} Apple duplicates removed."
-            )
-            st.rerun()
+                except Exception as exc:
+                    st.error(
+                        f"Xert sync failed: {exc}"
+                    )
+
+                else:
+                    st.success(
+                        "Xert sync complete: "
+                        f"{summary.get('imported', 0)} imported, "
+                        f"{summary.get('duplicates', 0)} duplicates, "
+                        f"{summary.get('skipped', 0)} skipped, "
+                        f"{summary.get('apple_duplicates_removed', 0)} "
+                        "Apple duplicates removed."
+                    )
+
+                    st.rerun()
 
     with c2:
-        if st.button("🌡 Add Core Temp data", key="core_temp"):
-            show_not_ready_message("Core Temp overlay")
+        if st.button(
+            "🌡 Add CORE Temp data",
+            key="core_temp",
+            use_container_width=True,
+        ):
+            show_not_ready_message(
+                "CORE Temp overlay"
+            )
 
 
 # ---------------------------------------------------------------------
@@ -317,53 +1272,121 @@ with st.container(border=True):
 st.divider()
 
 st.header("💪 Strength")
-st.caption("Strength is where Phoenix adds major value because Xert does not understand gym load.")
+
+st.caption(
+    "Phoenix adds context that cycling platforms cannot provide: "
+    "exercise load, muscle stress and interaction with cycling recovery."
+)
 
 with st.container(border=True):
     c1, c2, c3 = st.columns(3)
 
     with c1:
-        st.subheader("Latest session")
-        latest_strength, latest_exercises = show_strength_latest()
+        st.subheader(
+            "Latest session"
+        )
+
+        (
+            latest_strength,
+            latest_exercises,
+        ) = show_strength_latest()
 
     with c2:
-        st.subheader("Muscle load")
+        st.subheader(
+            "Strength load"
+        )
+
         if latest_strength is None:
-            st.write("No muscle load calculated yet.")
+            st.write(
+                "No strength load available yet."
+            )
+
         else:
-            st.write("Exercise summaries imported from Hevy.")
-            st.caption("Muscle-group classification coming next.")
+            st.write(
+                "Exercise and volume data imported from Hevy."
+            )
+
+            st.caption(
+                "Muscle-group classification is a future "
+                "Workout Intelligence extension."
+            )
 
     with c3:
-        st.subheader("Recovery cost")
+        st.subheader(
+            "Recovery context"
+        )
+
         if latest_strength is None:
-            st.write("No recovery cost estimated yet.")
+            st.write(
+                "No strength recovery context available."
+            )
+
         else:
-            st.write("Recovery cost engine planned.")
-            st.caption("This will use duration, exercise type, volume and recent readiness.")
+            st.write(
+                "The session contributes to the daily "
+                "workout summary and Workout Intelligence result."
+            )
+
+            st.caption(
+                "Future versions can estimate local muscle "
+                "fatigue and soreness risk."
+            )
+
+    st.divider()
 
     st.write("**Phoenix role**")
+
     st.write(
-        "Strength analysis will track muscle groups, RPE, soreness risk, "
-        "grip strength, and whether lifting supports or conflicts with cycling freshness."
+        "Strength training should be interpreted in relation to "
+        "the athlete's wider goals. Phoenix will ultimately track "
+        "which muscles were trained, the likely recovery demand, "
+        "and whether lifting supports or conflicts with planned "
+        "cycling."
     )
 
     if hevy_is_connected():
-        if st.button("🔄 Sync Hevy workouts", key="sync_hevy"):
-            with st.spinner("Syncing Hevy workouts..."):
-                summary = fetch_and_save_workouts(page=1, page_size=10)
+        if st.button(
+            "🔄 Sync Hevy workouts",
+            key="sync_hevy",
+            use_container_width=True,
+        ):
+            with st.spinner(
+                "Syncing Hevy workouts..."
+            ):
+                try:
+                    summary = (
+                        fetch_and_save_workouts(
+                            page=1,
+                            page_size=10,
+                        )
+                    )
 
-            st.success(
-                f"Hevy sync complete: {summary['imported']} imported, "
-                f"{summary['duplicates']} duplicates, {summary['total_seen']} seen."
-            )
-            st.rerun()
+                except Exception as exc:
+                    st.error(
+                        f"Hevy sync failed: {exc}"
+                    )
+
+                else:
+                    st.success(
+                        "Hevy sync complete: "
+                        f"{summary.get('imported', 0)} imported, "
+                        f"{summary.get('duplicates', 0)} duplicates, "
+                        f"{summary.get('total_seen', 0)} seen."
+                    )
+
+                    st.rerun()
+
     else:
-        st.warning("Hevy API key is not configured.")
+        st.warning(
+            "Hevy API key is not configured."
+        )
 
     if latest_strength is not None:
         st.divider()
-        show_exercise_summary(latest_exercises)
+
+        show_exercise_summary(
+            latest_exercises
+        )
 
 
 # ---------------------------------------------------------------------
@@ -373,51 +1396,122 @@ with st.container(border=True):
 st.divider()
 
 st.header("🚶 Other Movement")
-st.caption("Walking, mobility, hiking, recovery movement, and other non-primary activities.")
+
+st.caption(
+    "Walking, hiking, running, yoga, mobility and other "
+    "non-primary activities."
+)
 
 with st.container(border=True):
     c1, c2, c3 = st.columns(3)
 
     with c1:
-        st.subheader("Latest movement day")
-        latest_movements = show_latest_movement_day()
+        st.subheader(
+            "Latest movement day"
+        )
+
+        latest_movements = (
+            show_latest_movement_day()
+        )
 
     with c2:
-        st.subheader("Recovery support")
+        st.subheader(
+            "Recovery support"
+        )
+
         if latest_movements is None:
-            st.write("No recovery-support activity recorded yet.")
+            st.write(
+                "No recovery-support activity recorded yet."
+            )
+
         else:
-            st.write("Apple movement sessions imported.")
-            st.caption("Walking, yoga and mobility will feed the recovery context.")
+            st.write(
+                "Movement sessions provide context for recovery "
+                "without automatically becoming training strain."
+            )
+
+            st.caption(
+                "Easy walking and mobility may support recovery."
+            )
 
     with c3:
-        st.subheader("Fatigue risk")
+        st.subheader(
+            "Fatigue context"
+        )
+
         if latest_movements is None:
-            st.write("No fatigue risk estimated yet.")
+            st.write(
+                "No movement fatigue context available."
+            )
+
         else:
-            total_minutes = latest_movements["duration_minutes"].fillna(0).sum()
-            st.write(f"Total movement: **{total_minutes:.1f} min**")
-            st.caption("Long walks and hikes may eventually affect recovery.")
+            total_minutes = (
+                latest_movements[
+                    "duration_minutes"
+                ]
+                .fillna(0)
+                .sum()
+            )
+
+            st.metric(
+                "Movement duration",
+                f"{total_minutes:.1f} min",
+            )
+
+            st.caption(
+                "Long walks, hikes and runs may create meaningful "
+                "fatigue; ordinary steps should not."
+            )
+
+    st.divider()
 
     st.write("**Phoenix role**")
+
     st.write(
-        "Other movement should provide context without becoming fake strain. "
-        "A walk can support recovery, but steps alone should not drive training decisions."
+        "Other movement provides context without creating fake "
+        "strain. Phoenix should distinguish a gentle recovery walk "
+        "from a long hike or run rather than treating every step as "
+        "equivalent training."
     )
 
     c1, c2 = st.columns(2)
 
     with c1:
-        if st.button("🔄 Sync Apple workouts", key="sync_apple_workouts"):
-            with st.spinner("Syncing Apple workouts..."):
-                summary = sync_apple_workout_exports()
+        if st.button(
+            "🔄 Sync Apple workouts",
+            key="sync_apple_workouts",
+            use_container_width=True,
+        ):
+            with st.spinner(
+                "Syncing Apple workouts..."
+            ):
+                try:
+                    summary = (
+                        sync_apple_workout_exports()
+                    )
 
-            st.success(
-                f"Apple workout sync complete: {summary['imported']} imported, "
-                f"{summary['duplicates']} duplicates, {summary['files_seen']} files seen."
-            )
-            st.rerun()
+                except Exception as exc:
+                    st.error(
+                        "Apple workout sync failed: "
+                        f"{exc}"
+                    )
+
+                else:
+                    st.success(
+                        "Apple workout sync complete: "
+                        f"{summary.get('imported', 0)} imported, "
+                        f"{summary.get('duplicates', 0)} duplicates, "
+                        f"{summary.get('files_seen', 0)} files seen."
+                    )
+
+                    st.rerun()
 
     with c2:
-        if st.button("➕ Log other movement", key="movement"):
-            show_not_ready_message("Other movement logging")
+        if st.button(
+            "➕ Log other movement",
+            key="movement",
+            use_container_width=True,
+        ):
+            show_not_ready_message(
+                "Manual movement logging"
+            )
